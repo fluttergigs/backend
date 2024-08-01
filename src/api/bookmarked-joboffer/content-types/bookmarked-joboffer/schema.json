@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bookmarked_joboffers",
+  "info": {
+    "singularName": "bookmarked-joboffer",
+    "pluralName": "bookmarked-joboffers",
+    "displayName": "BookmarkedJoboffer"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "jobOffer": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job-offer.job-offer"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "admin::user"
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "companies",
+  "info": {
+    "singularName": "company",
+    "pluralName": "companies",
+    "displayName": "Company"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email",
+      "unique": true
+    },
+    "logo": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "linkedin": {
+      "type": "string"
+    },
+    "twitter": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "text",
+      "unique": true
+    },
+    "extras": {
+      "type": "json"
+    },
+    "size": {
+      "type": "enumeration",
+      "enum": [
+        "micro",
+        "small",
+        "medium",
+        "large"
+      ],
+      "default": "small"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "admin::user"
+    },
+    "jobOffers": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::job-offer.job-offer",
+      "mappedBy": "company"
+    }
+  }
+}

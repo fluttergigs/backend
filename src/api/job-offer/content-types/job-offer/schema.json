@@ -1,0 +1,77 @@
+{
+  "kind": "collectionType",
+  "collectionName": "job_offers",
+  "info": {
+    "singularName": "job-offer",
+    "pluralName": "job-offers",
+    "displayName": "JobOffer"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "how_to_apply": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "salary_from": {
+      "type": "string"
+    },
+    "salary_to": {
+      "type": "string"
+    },
+    "apply_before": {
+      "type": "date"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "work_type": {
+      "type": "enumeration",
+      "enum": [
+        "full-time",
+        "part-time",
+        "freelance",
+        "contract",
+        "internship"
+      ],
+      "default": "full-time"
+    },
+    "seniority_level": {
+      "type": "enumeration",
+      "enum": [
+        "junior",
+        "senior",
+        "medium",
+        "lead",
+        "staff",
+        "manager"
+      ],
+      "default": "medium"
+    },
+    "remote_options": {
+      "type": "enumeration",
+      "enum": [
+        "noRemote",
+        "fullRemote",
+        "hybrid"
+      ]
+    },
+    "work_permits": {
+      "type": "json"
+    },
+    "company": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::company.company",
+      "inversedBy": "jobOffers"
+    }
+  }
+}
