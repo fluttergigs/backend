@@ -4,7 +4,8 @@
   "info": {
     "singularName": "bookmarked-joboffer",
     "pluralName": "bookmarked-joboffers",
-    "displayName": "BookmarkedJoboffer"
+    "displayName": "BookmarkedJoboffer",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -19,7 +20,7 @@
     "user": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "admin::user"
+      "target": "plugin::users-permissions.user"
     }
   }
 }

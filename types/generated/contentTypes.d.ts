@@ -742,7 +742,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
   options: {
     draftAndPublish: false;
-    timestamps: true;
   };
   attributes: {
     username: Attribute.String &
@@ -771,6 +770,14 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    firstName: Attribute.String;
+    lastName: Attribute.String;
+    bio: Attribute.Text;
+    companies: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::company.company'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -795,6 +802,7 @@ export interface ApiBookmarkedJobofferBookmarkedJoboffer
     singularName: 'bookmarked-joboffer';
     pluralName: 'bookmarked-joboffers';
     displayName: 'BookmarkedJoboffer';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -808,7 +816,7 @@ export interface ApiBookmarkedJobofferBookmarkedJoboffer
     user: Attribute.Relation<
       'api::bookmarked-joboffer.bookmarked-joboffer',
       'oneToOne',
-      'admin::user'
+      'plugin::users-permissions.user'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -834,6 +842,7 @@ export interface ApiCompanyCompany extends Schema.CollectionType {
     singularName: 'company';
     pluralName: 'companies';
     displayName: 'Company';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -850,7 +859,11 @@ export interface ApiCompanyCompany extends Schema.CollectionType {
     extras: Attribute.JSON;
     size: Attribute.Enumeration<['micro', 'small', 'medium', 'large']> &
       Attribute.DefaultTo<'small'>;
-    user: Attribute.Relation<'api::company.company', 'oneToOne', 'admin::user'>;
+    user: Attribute.Relation<
+      'api::company.company',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
     jobOffers: Attribute.Relation<
       'api::company.company',
       'oneToMany',
@@ -925,12 +938,13 @@ export interface ApiJobOfferJobOffer extends Schema.CollectionType {
   };
 }
 
-export interface ApiSettingSetting extends Schema.CollectionType {
+export interface ApiSettingSetting extends Schema.SingleType {
   collectionName: 'settings';
   info: {
     singularName: 'setting';
     pluralName: 'settings';
     displayName: 'Setting';
+    description: '';
   };
   options: {
     draftAndPublish: true;
