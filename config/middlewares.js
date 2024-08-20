@@ -3,7 +3,7 @@ module.exports = [
   'strapi::errors',
   'strapi::security',
   'strapi::poweredBy',
-  {
+  /*{
     name: 'strapi::cors',
     config: {
       enabled: false,
@@ -11,7 +11,7 @@ module.exports = [
         headers: '*',
         // credentials: false,
     },
-  },
+  },*/
   'strapi::query',
   'strapi::body',
   'strapi::session',
