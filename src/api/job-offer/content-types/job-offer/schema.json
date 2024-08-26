@@ -4,7 +4,8 @@
   "info": {
     "singularName": "job-offer",
     "pluralName": "job-offers",
-    "displayName": "JobOffer"
+    "displayName": "JobOffer",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -14,26 +15,26 @@
     "title": {
       "type": "string"
     },
-    "how_to_apply": {
+    "howToApply": {
       "type": "string"
     },
     "description": {
       "type": "text"
     },
-    "salary_from": {
+    "salaryFrom": {
       "type": "string"
     },
-    "salary_to": {
+    "salaryTo": {
       "type": "string"
     },
-    "apply_before": {
+    "applyBefore": {
       "type": "date"
     },
-    "is_featured": {
+    "isFeatured": {
       "type": "boolean",
       "default": false
     },
-    "work_type": {
+    "workType": {
       "type": "enumeration",
       "enum": [
         "full-time",
@@ -44,7 +45,7 @@
       ],
       "default": "full-time"
     },
-    "seniority_level": {
+    "seniorityLevel": {
       "type": "enumeration",
       "enum": [
         "junior",
@@ -56,7 +57,7 @@
       ],
       "default": "medium"
     },
-    "remote_options": {
+    "remoteOptions": {
       "type": "enumeration",
       "enum": [
         "noRemote",
@@ -64,7 +65,7 @@
         "hybrid"
       ]
     },
-    "work_permits": {
+    "workPermits": {
       "type": "json"
     },
     "company": {
@@ -72,6 +73,9 @@
       "relation": "manyToOne",
       "target": "api::company.company",
       "inversedBy": "jobOffers"
+    },
+    "slug": {
+      "type": "uid"
     }
   }
 }

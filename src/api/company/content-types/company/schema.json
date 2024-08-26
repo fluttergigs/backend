@@ -17,7 +17,7 @@
     },
     "email": {
       "type": "email",
-      "unique": true
+      "unique": false
     },
     "logo": {
       "type": "string"
@@ -36,7 +36,7 @@
     },
     "slug": {
       "type": "text",
-      "unique": true
+      "unique": false
     },
     "extras": {
       "type": "json"
