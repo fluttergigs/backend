@@ -362,181 +362,6 @@ export interface AdminTransferTokenPermission extends Schema.CollectionType {
   };
 }
 
-export interface ApiBookmarkedJobofferBookmarkedJoboffer
-  extends Schema.CollectionType {
-  collectionName: 'bookmarked_joboffers';
-  info: {
-    singularName: 'bookmarked-joboffer';
-    pluralName: 'bookmarked-joboffers';
-    displayName: 'BookmarkedJoboffer';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    jobOffer: Attribute.Relation<
-      'api::bookmarked-joboffer.bookmarked-joboffer',
-      'oneToOne',
-      'api::job-offer.job-offer'
-    >;
-    user: Attribute.Relation<
-      'api::bookmarked-joboffer.bookmarked-joboffer',
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::bookmarked-joboffer.bookmarked-joboffer',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::bookmarked-joboffer.bookmarked-joboffer',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiCompanyCompany extends Schema.CollectionType {
-  collectionName: 'companies';
-  info: {
-    singularName: 'company';
-    pluralName: 'companies';
-    displayName: 'Company';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    name: Attribute.String;
-    email: Attribute.Email;
-    logo: Attribute.String;
-    website: Attribute.String;
-    description: Attribute.Text;
-    linkedin: Attribute.String;
-    twitter: Attribute.String;
-    slug: Attribute.Text;
-    extras: Attribute.JSON;
-    size: Attribute.Enumeration<['micro', 'small', 'medium', 'large']> &
-      Attribute.DefaultTo<'small'>;
-    user: Attribute.Relation<
-      'api::company.company',
-      'manyToOne',
-      'plugin::users-permissions.user'
-    >;
-    jobOffers: Attribute.Relation<
-      'api::company.company',
-      'oneToMany',
-      'api::job-offer.job-offer'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::company.company',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::company.company',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiJobOfferJobOffer extends Schema.CollectionType {
-  collectionName: 'job_offers';
-  info: {
-    singularName: 'job-offer';
-    pluralName: 'job-offers';
-    displayName: 'JobOffer';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    title: Attribute.String;
-    howToApply: Attribute.String;
-    description: Attribute.Text;
-    salaryFrom: Attribute.String;
-    salaryTo: Attribute.String;
-    applyBefore: Attribute.Date;
-    isFeatured: Attribute.Boolean & Attribute.DefaultTo<false>;
-    workType: Attribute.Enumeration<
-      ['full-time', 'part-time', 'freelance', 'contract', 'internship']
-    > &
-      Attribute.DefaultTo<'full-time'>;
-    seniorityLevel: Attribute.Enumeration<
-      ['junior', 'senior', 'medium', 'lead', 'staff', 'manager']
-    > &
-      Attribute.DefaultTo<'medium'>;
-    remoteOptions: Attribute.Enumeration<['noRemote', 'fullRemote', 'hybrid']>;
-    workPermits: Attribute.JSON;
-    company: Attribute.Relation<
-      'api::job-offer.job-offer',
-      'manyToOne',
-      'api::company.company'
-    >;
-    slug: Attribute.UID;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::job-offer.job-offer',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::job-offer.job-offer',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiSettingSetting extends Schema.SingleType {
-  collectionName: 'settings';
-  info: {
-    singularName: 'setting';
-    pluralName: 'settings';
-    displayName: 'Setting';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    extras: Attribute.JSON;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::setting.setting',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::setting.setting',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface PluginUploadFile extends Schema.CollectionType {
   collectionName: 'files';
   info: {
@@ -970,6 +795,257 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
+export interface ApiBookmarkedJobofferBookmarkedJoboffer
+  extends Schema.CollectionType {
+  collectionName: 'bookmarked_joboffers';
+  info: {
+    singularName: 'bookmarked-joboffer';
+    pluralName: 'bookmarked-joboffers';
+    displayName: 'BookmarkedJoboffer';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    jobOffer: Attribute.Relation<
+      'api::bookmarked-joboffer.bookmarked-joboffer',
+      'oneToOne',
+      'api::job-offer.job-offer'
+    >;
+    user: Attribute.Relation<
+      'api::bookmarked-joboffer.bookmarked-joboffer',
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::bookmarked-joboffer.bookmarked-joboffer',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::bookmarked-joboffer.bookmarked-joboffer',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiCompanyCompany extends Schema.CollectionType {
+  collectionName: 'companies';
+  info: {
+    singularName: 'company';
+    pluralName: 'companies';
+    displayName: 'Company';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    name: Attribute.String;
+    email: Attribute.Email;
+    logo: Attribute.String;
+    website: Attribute.String;
+    description: Attribute.Text;
+    linkedin: Attribute.String;
+    twitter: Attribute.String;
+    slug: Attribute.Text;
+    extras: Attribute.JSON;
+    size: Attribute.Enumeration<['micro', 'small', 'medium', 'large']> &
+      Attribute.DefaultTo<'small'>;
+    user: Attribute.Relation<
+      'api::company.company',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    jobOffers: Attribute.Relation<
+      'api::company.company',
+      'oneToMany',
+      'api::job-offer.job-offer'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::company.company',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::company.company',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiJobOfferJobOffer extends Schema.CollectionType {
+  collectionName: 'job_offers';
+  info: {
+    singularName: 'job-offer';
+    pluralName: 'job-offers';
+    displayName: 'JobOffer';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    title: Attribute.String;
+    howToApply: Attribute.String;
+    description: Attribute.Text;
+    salaryFrom: Attribute.String;
+    salaryTo: Attribute.String;
+    applyBefore: Attribute.Date;
+    isFeatured: Attribute.Boolean & Attribute.DefaultTo<false>;
+    workType: Attribute.Enumeration<
+      ['full-time', 'part-time', 'freelance', 'contract', 'internship']
+    > &
+      Attribute.DefaultTo<'full-time'>;
+    seniorityLevel: Attribute.Enumeration<
+      ['junior', 'senior', 'medium', 'lead', 'staff', 'manager']
+    > &
+      Attribute.DefaultTo<'medium'>;
+    remoteOptions: Attribute.Enumeration<['noRemote', 'fullRemote', 'hybrid']>;
+    workPermits: Attribute.JSON;
+    company: Attribute.Relation<
+      'api::job-offer.job-offer',
+      'manyToOne',
+      'api::company.company'
+    >;
+    slug: Attribute.UID;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::job-offer.job-offer',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::job-offer.job-offer',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiLearnCategoryLearnCategory extends Schema.CollectionType {
+  collectionName: 'learn_categories';
+  info: {
+    singularName: 'learn-category';
+    pluralName: 'learn-categories';
+    displayName: 'LearnCategory';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    title: Attribute.String;
+    description: Attribute.Text;
+    resources: Attribute.Relation<
+      'api::learn-category.learn-category',
+      'oneToMany',
+      'api::learn-resource.learn-resource'
+    >;
+    slug: Attribute.UID<'api::learn-category.learn-category', 'description'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::learn-category.learn-category',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::learn-category.learn-category',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiLearnResourceLearnResource extends Schema.CollectionType {
+  collectionName: 'learn_resources';
+  info: {
+    singularName: 'learn-resource';
+    pluralName: 'learn-resources';
+    displayName: 'LearnResource';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    title: Attribute.String;
+    description: Attribute.String;
+    link: Attribute.String & Attribute.Required & Attribute.Unique;
+    category: Attribute.Relation<
+      'api::learn-resource.learn-resource',
+      'oneToOne',
+      'api::learn-category.learn-category'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::learn-resource.learn-resource',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::learn-resource.learn-resource',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiSettingSetting extends Schema.SingleType {
+  collectionName: 'settings';
+  info: {
+    singularName: 'setting';
+    pluralName: 'settings';
+    displayName: 'Setting';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    extras: Attribute.JSON;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::setting.setting',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::setting.setting',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -980,10 +1056,6 @@ declare module '@strapi/types' {
       'admin::api-token-permission': AdminApiTokenPermission;
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
-      'api::bookmarked-joboffer.bookmarked-joboffer': ApiBookmarkedJobofferBookmarkedJoboffer;
-      'api::company.company': ApiCompanyCompany;
-      'api::job-offer.job-offer': ApiJobOfferJobOffer;
-      'api::setting.setting': ApiSettingSetting;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
@@ -992,6 +1064,12 @@ declare module '@strapi/types' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
+      'api::bookmarked-joboffer.bookmarked-joboffer': ApiBookmarkedJobofferBookmarkedJoboffer;
+      'api::company.company': ApiCompanyCompany;
+      'api::job-offer.job-offer': ApiJobOfferJobOffer;
+      'api::learn-category.learn-category': ApiLearnCategoryLearnCategory;
+      'api::learn-resource.learn-resource': ApiLearnResourceLearnResource;
+      'api::setting.setting': ApiSettingSetting;
     }
   }
 }

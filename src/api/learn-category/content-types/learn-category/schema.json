@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "learn_categories",
+  "info": {
+    "singularName": "learn-category",
+    "pluralName": "learn-categories",
+    "displayName": "LearnCategory",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "resources": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::learn-resource.learn-resource"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "description"
+    }
+  }
+}

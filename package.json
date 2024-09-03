@@ -20,6 +20,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^5.3.4",
     "slugify": "^1.6.6",
+    "strapi-provider-email-mailtrap": "^3.5.0",
     "styled-components": "^5.3.3"
   },
   "author": {
