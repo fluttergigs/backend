@@ -1,5 +1,6 @@
 'use strict';
 
+const {AxiosService} = require("../../../core/services/axiosService");
 /**
  * job-offer service
  */
