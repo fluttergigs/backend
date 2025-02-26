@@ -1,15 +1,14 @@
-module.exports = ({ env }) => ({
-  // ...
+module.exports = ({env}) => ({
   email: {
-    provider: 'mailtrap',
-    providerOptions: {
-      user: env('MAILTRAP_USER', 'default_user'),
-      password: env('MAILTRAP_PASSWORD', 'default_pass')
-    },
-    settings: {
-      defaultFrom: env('MAILTRAP_DEFAULT_FROM', 'default@value.com'),
-      defaultReplyTo: env('MAILTRAP_DEFAULT_REPLY_TO', 'default@value.com'),
-    },
-  }
-  // ...
+    config: {
+      provider: 'strapi-provider-email-resend',
+      providerOptions: {
+        apiKey: env('RESEND_API_KEY'), // Required
+      },
+      settings: {
+        defaultFrom: 'hello@fluttergigs.com',
+        defaultReplyTo: 'no-reply@fluttergigs.com',
+      },
+    }
+  },
 });
