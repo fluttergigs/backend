@@ -5,13 +5,13 @@ import {CustomJobOfferService} from "./job-offer-service";
  */
 import {factories} from '@strapi/strapi';
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const {createCoreService} = factories;
 
 export default createCoreService('api::job-offer.job-offer', ({strapi}) => ({
 
-  async scrape(ctx) {
+  async scrape(ctx: any) {
     try {
       // Your code here
 

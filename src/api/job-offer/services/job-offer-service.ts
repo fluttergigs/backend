@@ -1,12 +1,13 @@
 import {HttpService} from "../../../core/services/network/httpService";
 import {AxiosService} from "../../../core/services/network/axiosService";
 import {AxiosResponse} from "axios";
+
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 
 export class CustomJobOfferService {
 
- static async saveJobsToStrapi(strapi, jobs) {
+  static async saveJobsToStrapi(strapi, jobs) {
     for (const job of jobs) {
       try {
         // Use Strapi Entity Service to create a job entry
@@ -29,7 +30,7 @@ export class CustomJobOfferService {
     }
   };
 
-  static async getJobOffers(ctx) {
+  static async getJobOffers(ctx: any) {
     const baseUrl = 'https://himalayas.app/jobs/api';
     const limit = 200;
     let offset = 0;
