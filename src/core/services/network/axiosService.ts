@@ -10,7 +10,7 @@ export class AxiosService extends HttpService<AxiosRequestConfig, AxiosResponse>
     "Accept": "application/json",
   };
 
-  constructor(baseUrl: string, headers?: Record<string, string>) {
+  constructor(baseUrl?: string, headers?: Record<string, string>) {
     super();
     this.instance = axios.create({
       baseURL: baseUrl,
