@@ -1,21 +1,20 @@
-'use strict';
+import {factories} from "@strapi/strapi";
+import slugify from "slugify";
+import {CompanyCreateSchema} from "../validation/index";
+import utils from "@strapi/utils";
 
-/**
- * company controller
- */
+const {ApplicationError, ValidationError} = utils.errors;
 
-const utils = require("@strapi/utils");
-const slugify = require('slugify');
-const { CompanyCreateSchema } = require("../validation/index");
+export default factories.createCoreService('api::company.company', ({strapi}) => ({
+  /**
+   * Create a new company
+   * @param ctx
+   * @returns {Promise<*>}
+   */
+  async customCreateCompany(ctx): Promise<any> {
 
-const { createCoreController } = require('@strapi/strapi').factories;
-const { ApplicationError, ValidationError } = utils.errors;
-
-module.exports = createCoreController('api::company.company', ({ strapi }) => ({
-
-  async create(ctx) {
     try {
-      const { email, slug, name,  } = await CompanyCreateSchema.validate(
+      const {email, slug, name,} = await CompanyCreateSchema.validate(
         ctx.request.body.data, // Validating the request body against BlogCreateSchema
         {
           stripUnknown: true, // Removing unknown fields
@@ -25,18 +24,18 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
       //check if a company with the same email already exists
       const companyCheck = await strapi.query("api::company.company").findOne({
-        where: { email },
+        where: {email},
       });
 
       const userCheck = await strapi.query("plugin::users-permissions.user").findOne({
-        where: { email },
+        where: {email},
       });
 
       if (companyCheck || userCheck) {
         throw new ApplicationError("This email is already in use");
       }
 
-     const {username} = ctx.state.user;
+      const {username} = ctx.state.user;
 
       return await strapi.query("api::company.company").create({
         // Creating the blog post
@@ -53,7 +52,5 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
       throw new ApplicationError("An Error occurred"); // Throwing validation error
     }
   },
-
-
 
 }));

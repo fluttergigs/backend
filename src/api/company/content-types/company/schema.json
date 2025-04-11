@@ -62,6 +62,10 @@
       "relation": "oneToMany",
       "target": "api::job-offer.job-offer",
       "mappedBy": "company"
+    },
+    "hasFreeJobPosts": {
+      "type": "boolean",
+      "default": true
     }
   }
 }

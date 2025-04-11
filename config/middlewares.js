@@ -7,9 +7,9 @@ module.exports = [
     name: 'strapi::cors',
     config: {
       enabled: true,
-        origin: ['http://localhost:3000','http://localhost:3001','https://fluttergigs.com', 'fluttergigs.com'],
-        headers: '*',
-        // credentials: true,
+      origin: ['http://localhost:3000', 'http://localhost:4000', 'http://localhost:3001', 'https://fluttergigs.com', 'fluttergigs.com'],
+      headers: '*',
+      // credentials: true,
     },
   },
   'strapi::query',
