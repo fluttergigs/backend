@@ -1,4 +1,4 @@
-module.exports = ({env}) => ({
+export default ({env}) => ({
   email: {
     config: {
       provider: 'strapi-provider-email-resend',
@@ -11,4 +11,4 @@ module.exports = ({env}) => ({
       },
     }
   },
-});
+})

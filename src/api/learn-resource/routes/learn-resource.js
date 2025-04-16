@@ -1,9 +1,7 @@
 'use strict';
-
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * learn-resource router
  */
-
-const { createCoreRouter } = require('@strapi/strapi').factories;
-
-module.exports = createCoreRouter('api::learn-resource.learn-resource');
+const strapi_1 = require("@strapi/strapi");
+exports.default = strapi_1.factories.createCoreRouter('api::learn-resource.learn-resource');

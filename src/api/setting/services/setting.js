@@ -1,9 +1,7 @@
 'use strict';
-
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * setting service
  */
-
-const { createCoreService } = require('@strapi/strapi').factories;
-
-module.exports = createCoreService('api::setting.setting');
+const strapi_1 = require("@strapi/strapi");
+exports.default = strapi_1.factories.createCoreService('api::setting.setting');

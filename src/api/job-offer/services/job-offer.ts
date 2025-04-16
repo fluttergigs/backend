@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * job-offer service
  */
@@ -7,6 +5,8 @@ import {factories} from "@strapi/strapi";
 import utils from "@strapi/utils";
 import {JobOfferCreateSchema} from "../validation/index";
 import slugify from "slugify";
+import {customAlphabet} from "nanoid"; //@ts-ignore
+
 
 const {ApplicationError, ValidationError} = utils.errors;
 
@@ -14,29 +14,27 @@ export default factories.createCoreService('api::job-offer.job-offer', ({strapi}
 
   /**
    * Create a new job offer
-   * @param ctx
    * @returns {Promise<*>}
+   * @param data
    */
-  async customCreateJobOffer(ctx) {
+  async create(data): Promise<any> {
     try {
       const {
         company,
         title,
       } = await JobOfferCreateSchema.validate(
-        ctx.request.body.data,
+        data,
         {
           stripUnknown: true,
           abortEarly: true,
         }
       );
 
-      const {username} = ctx.state.user;
-
       //get the company relation
       //count all the job offers for the company
       //if the count is greater than 0, then mark the hasFreeJobOffer as false
 
-      const companyCheck = await strapi.query("api::company.company").findOne({
+      const companyCheck = await strapi.db.query("api::company.company").findOne({
         where: {id: company},
       });
 
@@ -44,22 +42,26 @@ export default factories.createCoreService('api::job-offer.job-offer', ({strapi}
         throw new ApplicationError("This company does not exist");
       }
 
-      const jobOffersCount = await strapi.query("api::job-offer.job-offer").count({
+      const jobOffersCount = await strapi.db.query("api::job-offer.job-offer").count({
         where: {company},
       });
 
       if (jobOffersCount > 0) {
-        await strapi.query("api::company.company").update({
+        await strapi.db.query("api::company.company").update({
           where: {id: company},
-          data: {hasFreeJobOffer: false},
+          data: {hasFreeJobPosts: false},
         });
       }
 
-      return await strapi.query("api::job-offer.job-offer").create({
+      const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 8);
+
+      // @ts-ignore
+      return await strapi.documents("api::job-offer.job-offer").create({
         data: {
-          ...ctx.request.body.data,
-          slug: slugify(title + companyCheck.name),
+          data,
+          slug: slugify(`${title}-at-${companyCheck.name}-${nanoid()}`, {lower: true,}),
         },
+        status: 'published',
       });
     } catch (error) {
       console.log(error);
@@ -69,4 +71,23 @@ export default factories.createCoreService('api::job-offer.job-offer', ({strapi}
     }
   },
 
+  /**
+   * Find a job offer by slug
+   * @param ctx
+   * @returns {Promise<*>}
+   */
+  async findOneBySlug(slug) {
+
+    // @ts-ignore
+    const jobOffers = await strapi.documents("api::job-offer.job-offer").findMany({
+      where: {slug},
+      populate: "*",
+    });
+
+    if (!jobOffers || jobOffers.length === 0) {
+      throw new ApplicationError("This job offer does not exist");
+    }
+
+    return {data: jobOffers[0]};
+  }
 }));

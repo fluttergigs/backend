@@ -1,9 +1,7 @@
 'use strict';
-
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * setting controller
  */
-
-const { createCoreController } = require('@strapi/strapi').factories;
-
-module.exports = createCoreController('api::setting.setting');
+const strapi_1 = require("@strapi/strapi");
+exports.default = strapi_1.factories.createCoreController('api::setting.setting');

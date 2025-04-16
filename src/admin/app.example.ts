@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const config = {
-    locales: [
+  locales: [
     // 'ar',
     // 'fr',
     // 'cs',
@@ -28,12 +26,14 @@ const config = {
     // 'vi',
     // 'zh-Hans',
     // 'zh',
-    ],
+  ],
 };
+
 const bootstrap = (app) => {
-    console.log(app);
+  console.log(app);
 };
-exports.default = {
-    config,
-    bootstrap,
+
+export default {
+  config,
+  bootstrap,
 };

@@ -1,9 +1,7 @@
 'use strict';
-
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * learn-category service
  */
-
-const { createCoreService } = require('@strapi/strapi').factories;
-
-module.exports = createCoreService('api::learn-category.learn-category');
+const strapi_1 = require("@strapi/strapi");
+exports.default = strapi_1.factories.createCoreService('api::learn-category.learn-category');

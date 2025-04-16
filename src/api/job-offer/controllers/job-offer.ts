@@ -9,41 +9,46 @@ import {factories} from "@strapi/strapi";
 
 export default factories.createCoreController('api::job-offer.job-offer', ({strapi}) => ({
 
-  async create(ctx) {
-    await strapi.service('api::job-offer.job-offer').customCreateJobOffer(ctx);
-  },
-
   async find(ctx) {
     // some logic here
-    const { data, meta } = await super.find(ctx);
+    const {data, meta} = await super.find(ctx);
     // some more logic
-
-    return { data, meta };
+    return {data, meta};
   },
 
   async findOne(ctx) {
     // some logic here
-    const response = await super.findOne(ctx);
     // some more logic
 
-    return response;
+    console.log('CONTEXT', ctx);
+
+    let joboffer = await super.findOne(ctx);
+
+    console.log('data', joboffer);
+
+    return await super.findOne(ctx);
+  },
+
+  async findOneBySlug(ctx) {
+    return await strapi.service('api::job-offer.job-offer').findOneBySlug(ctx.params.slug);
+  },
+
+  async create(ctx) {
+    return await strapi.service('api::job-offer.job-offer').create(ctx.request.body.data);
   },
 
   async update(ctx) {
     // some logic here
-    const response = await super.update(ctx);
     // some more logic
 
-    return response;
+    return await super.update(ctx);
   },
 
   async delete(ctx) {
     // some logic here
-    const response = await super.delete(ctx);
     // some more logic
 
-    return response;
+    return await super.delete(ctx);
   }
-
 
 }));
