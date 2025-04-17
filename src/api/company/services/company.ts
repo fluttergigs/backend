@@ -1,7 +1,9 @@
 import {factories} from "@strapi/strapi";
 import slugify from "slugify";
-import {CompanyCreateSchema, CompanyUpdateSchema} from "../validation/index"
+import {CompanyCreateSchema, CompanyUpdateSchema} from "../validation"
 import utils from "@strapi/utils";
+
+// import {customAlphabet} from "nanoid";
 import {customAlphabet} from "nanoid";
 
 const {ApplicationError, ValidationError} = utils.errors;

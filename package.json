@@ -22,7 +22,7 @@
     "strapi-provider-email-mailtrap": "^3.5.0",
     "strapi-provider-email-resend": "^1.0.4",
     "styled-components": "^6.0.0",
-    "nanoid": "^4.0.2"
+    "nanoid": "^3.3.6"
   },
   "author": {
     "name": "A Strapi developer"

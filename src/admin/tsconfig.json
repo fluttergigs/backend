@@ -1,10 +1,15 @@
 {
+  "extends": "@strapi/typescript-utils/tsconfigs/admin",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -15,6 +20,14 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["../plugins/**/admin/src/**/*", "./"],
-  "exclude": ["node_modules/", "build/", "dist/", "**/*.test.ts"]
+  "include": [
+    "../plugins/**/admin/src/**/*",
+    "./"
+  ],
+  "exclude": [
+    "node_modules/",
+    "build/",
+    "dist/",
+    "**/*.test.ts"
+  ]
 }

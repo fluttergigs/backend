@@ -3,9 +3,9 @@
  */
 import {factories} from "@strapi/strapi";
 import utils from "@strapi/utils";
-import {JobOfferCreateSchema} from "../validation/index";
+import {JobOfferCreateSchema} from "../validation";
 import slugify from "slugify";
-import {customAlphabet} from "nanoid"; //@ts-ignore
+import {customAlphabet} from "nanoid";
 
 
 const {ApplicationError, ValidationError} = utils.errors;
