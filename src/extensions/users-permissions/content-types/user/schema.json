@@ -79,6 +79,18 @@
       "relation": "oneToMany",
       "target": "api::company.company",
       "mappedBy": "user"
+    },
+    "educations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::education.education",
+      "mappedBy": "user"
+    },
+    "experiences": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::experience.experience",
+      "mappedBy": "user"
     }
   }
 }

@@ -41,7 +41,8 @@
         "part-time",
         "freelance",
         "contract",
-        "internship"
+        "internship",
+        "self-employed"
       ],
       "default": "full-time"
     },
