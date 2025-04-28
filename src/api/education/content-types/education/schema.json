@@ -24,14 +24,6 @@
       "type": "boolean",
       "default": true
     },
-    "startYear": {
-      "type": "string",
-      "required": true
-    },
-    "endYear": {
-      "type": "string",
-      "required": false
-    },
     "degree": {
       "type": "string"
     },
@@ -43,6 +35,13 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "educations"
+    },
+    "startYear": {
+      "type": "integer",
+      "required": true
+    },
+    "endYear": {
+      "type": "integer"
     }
   }
 }
