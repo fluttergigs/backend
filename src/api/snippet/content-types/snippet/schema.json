@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "snippets",
+  "info": {
+    "singularName": "snippet",
+    "pluralName": "snippets",
+    "displayName": "snippet"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "code": {
+      "type": "text",
+      "required": true
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "snippets"
+    }
+  }
+}

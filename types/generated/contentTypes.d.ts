@@ -700,6 +700,40 @@ export interface ApiSettingSetting extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiSnippetSnippet extends Struct.CollectionTypeSchema {
+  collectionName: 'snippets';
+  info: {
+    displayName: 'snippet';
+    pluralName: 'snippets';
+    singularName: 'snippet';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    code: Schema.Attribute.Text & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::snippet.snippet'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases';
@@ -1194,6 +1228,7 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    snippets: Schema.Attribute.Relation<'oneToMany', 'api::snippet.snippet'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1224,6 +1259,7 @@ declare module '@strapi/strapi' {
       'api::learn-category.learn-category': ApiLearnCategoryLearnCategory;
       'api::learn-resource.learn-resource': ApiLearnResourceLearnResource;
       'api::setting.setting': ApiSettingSetting;
+      'api::snippet.snippet': ApiSnippetSnippet;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

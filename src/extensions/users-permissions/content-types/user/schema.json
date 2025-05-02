@@ -91,6 +91,12 @@
       "relation": "oneToMany",
       "target": "api::experience.experience",
       "mappedBy": "user"
+    },
+    "snippets": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::snippet.snippet",
+      "mappedBy": "user"
     }
   }
 }
