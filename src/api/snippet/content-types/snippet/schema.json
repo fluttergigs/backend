@@ -4,7 +4,8 @@
   "info": {
     "singularName": "snippet",
     "pluralName": "snippets",
-    "displayName": "snippet"
+    "displayName": "snippet",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -28,6 +29,10 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "snippets"
+    },
+    "language": {
+      "type": "string",
+      "default": "dart"
     }
   }
 }

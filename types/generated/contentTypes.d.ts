@@ -703,6 +703,7 @@ export interface ApiSettingSetting extends Struct.SingleTypeSchema {
 export interface ApiSnippetSnippet extends Struct.CollectionTypeSchema {
   collectionName: 'snippets';
   info: {
+    description: '';
     displayName: 'snippet';
     pluralName: 'snippets';
     singularName: 'snippet';
@@ -716,6 +717,7 @@ export interface ApiSnippetSnippet extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
+    language: Schema.Attribute.String & Schema.Attribute.DefaultTo<'dart'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
