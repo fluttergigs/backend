@@ -1,4 +1,4 @@
-import {Contact, Mail, MailService} from "./mail_service";
+import {Contact, Mail, MailService} from "./mailService";
 
 /**
  * ResendMailService is a concrete implementation of the MailService interface.

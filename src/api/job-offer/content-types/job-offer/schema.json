@@ -12,6 +12,9 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "companyName": {
+      "type": "string"
+    },
     "title": {
       "type": "string"
     },

@@ -1,4 +1,4 @@
-import {TwitterWrapperImpl} from "../../../../services/twitter_api";
+import {TwitterWrapperImpl} from "../../../../services/twitterApi";
 
 
 export default {

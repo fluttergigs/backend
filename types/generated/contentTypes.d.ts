@@ -554,6 +554,7 @@ export interface ApiJobOfferJobOffer extends Struct.CollectionTypeSchema {
   attributes: {
     applyBefore: Schema.Attribute.Date;
     company: Schema.Attribute.Relation<'manyToOne', 'api::company.company'>;
+    companyName: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

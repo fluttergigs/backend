@@ -1,4 +1,4 @@
-import {ResendMailService} from "../../../../services/resend_mail_service";
+import {ResendMailService} from "../../../../services/resendMailService";
 
 export default {
   async afterCreate(event: any) {

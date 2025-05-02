@@ -25,7 +25,7 @@ abstract class TwitterWrapper {
   abstract createTweet<T extends Tweet>(data: T): Promise<void>;
 
 
-   buildJobTweet<T extends {
+  buildJobTweet<T extends {
     companyName?: string;
     title?: string;
     location?: string;
@@ -40,7 +40,7 @@ abstract class TwitterWrapper {
     },
     remoteOptions: string,
   }>(data: T): string {
-    const companyName = data.company.name ?? 'GarbusCorp';
+    const companyName = data.companyName ?? data.company.name ?? 'GarbusCorp';
     const jobTitle = data.title ?? 'Flutter Developer';
     const salaryRange = data.salaryFrom ? `💵 Salary: $${data.salaryFrom} - ${data.salaryTo}` : 'N/A'
     const applicationLink = `https://fluttergigs.com/jobs/${data.slug ?? ''}`
