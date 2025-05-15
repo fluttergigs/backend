@@ -28,7 +28,6 @@ export default factories.createCoreService('api::bookmarked-joboffer.bookmarked-
           user: user.id,
           jobOffer: data.jobOffer,
         },
-        status: 'published',
       });
     },
 

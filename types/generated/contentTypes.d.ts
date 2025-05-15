@@ -379,7 +379,7 @@ export interface ApiBookmarkedJobofferBookmarkedJoboffer
     singularName: 'bookmarked-joboffer';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -461,7 +461,7 @@ export interface ApiEducationEducation extends Struct.CollectionTypeSchema {
     singularName: 'education';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -500,7 +500,7 @@ export interface ApiExperienceExperience extends Struct.CollectionTypeSchema {
     singularName: 'experience';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     company: Schema.Attribute.String & Schema.Attribute.Required;
@@ -540,6 +540,49 @@ export interface ApiExperienceExperience extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiJobEmailQueueJobEmailQueue
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'job_email_queues';
+  info: {
+    description: '';
+    displayName: 'JobEmailQueue';
+    pluralName: 'job-email-queues';
+    singularName: 'job-email-queue';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    jobOffer: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::job-offer.job-offer'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::job-email-queue.job-email-queue'
+    > &
+      Schema.Attribute.Private;
+    notificationType: Schema.Attribute.Enumeration<
+      ['instant', 'daily', 'weekly']
+    > &
+      Schema.Attribute.DefaultTo<'instant'>;
+    publishedAt: Schema.Attribute.DateTime;
+    state: Schema.Attribute.Enumeration<['pending', 'sent', 'failed']> &
+      Schema.Attribute.DefaultTo<'pending'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiJobOfferJobOffer extends Struct.CollectionTypeSchema {
   collectionName: 'job_offers';
   info: {
@@ -549,7 +592,7 @@ export interface ApiJobOfferJobOffer extends Struct.CollectionTypeSchema {
     singularName: 'job-offer';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     applyBefore: Schema.Attribute.Date;
@@ -561,6 +604,10 @@ export interface ApiJobOfferJobOffer extends Struct.CollectionTypeSchema {
     description: Schema.Attribute.Text;
     howToApply: Schema.Attribute.String;
     isFeatured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    jobEmailQueues: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::job-email-queue.job-email-queue'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -607,7 +654,7 @@ export interface ApiLearnCategoryLearnCategory
     singularName: 'learn-category';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -643,7 +690,7 @@ export interface ApiLearnResourceLearnResource
     singularName: 'learn-resource';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     category: Schema.Attribute.Relation<
@@ -1211,6 +1258,14 @@ export interface PluginUsersPermissionsUser
       'api::experience.experience'
     >;
     firstName: Schema.Attribute.String;
+    jobEmailQueues: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::job-email-queue.job-email-queue'
+    >;
+    jobNotificationPreference: Schema.Attribute.Enumeration<
+      ['instant', 'daily', 'weekly']
+    > &
+      Schema.Attribute.DefaultTo<'instant'>;
     lastName: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1257,6 +1312,7 @@ declare module '@strapi/strapi' {
       'api::company.company': ApiCompanyCompany;
       'api::education.education': ApiEducationEducation;
       'api::experience.experience': ApiExperienceExperience;
+      'api::job-email-queue.job-email-queue': ApiJobEmailQueueJobEmailQueue;
       'api::job-offer.job-offer': ApiJobOfferJobOffer;
       'api::learn-category.learn-category': ApiLearnCategoryLearnCategory;
       'api::learn-resource.learn-resource': ApiLearnResourceLearnResource;

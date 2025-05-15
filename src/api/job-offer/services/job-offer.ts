@@ -61,7 +61,6 @@ export default factories.createCoreService('api::job-offer.job-offer', ({strapi}
           data,
           slug: slugify(`${title}-at-${companyCheck.name}-${nanoid()}`, {lower: true,}),
         },
-        status: 'published',
       });
     } catch (error) {
       console.log(error);

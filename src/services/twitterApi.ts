@@ -68,12 +68,12 @@ ${applicationLink}
 
 export class TwitterWrapperImpl extends TwitterWrapper {
   async createTweet<T extends Tweet>(data: T) {
-
     try {
-      const {data: createdTweet} = await twitterClient.v2.tweet(data.text);
-      console.log('Tweet', createdTweet.id, ':', createdTweet.text);
+      if (process.env.NODE_ENV !== 'development' && data.text.trim() !== '') {
+        const {data: createdTweet} = await twitterClient.v2.tweet(data.text);
+        console.log('Tweet', createdTweet.id, ':', createdTweet.text);
+      }
     } catch (e) {
-
       console.error('Error creating tweet:', e);
     }
   }

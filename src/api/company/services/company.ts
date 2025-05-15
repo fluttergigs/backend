@@ -46,7 +46,6 @@ export default factories.createCoreService('api::company.company', ({strapi}) =>
           ...data,
           slug: slugify(`${name}-${nanoid()}`, {lower: true}),
         },
-        status: 'published'
       });
     } catch (error) {
 

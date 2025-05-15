@@ -8,7 +8,7 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
@@ -80,6 +80,12 @@
     },
     "slug": {
       "type": "uid"
+    },
+    "jobEmailQueues": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::job-email-queue.job-email-queue",
+      "mappedBy": "jobOffer"
     }
   }
 }

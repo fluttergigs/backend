@@ -97,6 +97,21 @@
       "relation": "oneToMany",
       "target": "api::snippet.snippet",
       "mappedBy": "user"
+    },
+    "jobNotificationPreference": {
+      "type": "enumeration",
+      "enum": [
+        "instant",
+        "daily",
+        "weekly"
+      ],
+      "default": "instant"
+    },
+    "jobEmailQueues": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::job-email-queue.job-email-queue",
+      "mappedBy": "user"
     }
   }
 }

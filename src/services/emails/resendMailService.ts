@@ -11,7 +11,6 @@ const resend = new Resend(process.env.RESEND_API_KEY || '');
 
 export class ResendMailService implements MailService {
 
-
   async saveContact<T extends Contact>(data: T): Promise<void> {
     await resend.contacts.create({
       email: data.email,
@@ -25,12 +24,16 @@ export class ResendMailService implements MailService {
 
   async sendEmail<T extends Mail>(data: T): Promise<void> {
 
-    await resend.emails.send({
-      from: data.from || 'hello@fluttergigs.com',
-      to: data.to,
-      subject: data.subject,
-      html: data.text || data.html,
-    });
+    try {
+      await resend.emails.send({
+        from: data.from || 'FlutterGigs <hello@fluttergigs.com>',
+        to: data.to,
+        subject: data.subject,
+        html: data.text || data.html,
+      });
+    } catch (e) {
+      strapi.log.error(`Error sending email with subject: ${data.subject}`, e);
+    }
   }
 
   async sendBulkEmail<T>(data: T): Promise<void> {

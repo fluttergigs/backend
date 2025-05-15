@@ -1,0 +1,46 @@
+{
+  "kind": "collectionType",
+  "collectionName": "job_email_queues",
+  "info": {
+    "singularName": "job-email-queue",
+    "pluralName": "job-email-queues",
+    "displayName": "JobEmailQueue",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "jobEmailQueues"
+    },
+    "jobOffer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::job-offer.job-offer",
+      "inversedBy": "jobEmailQueues"
+    },
+    "state": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "sent",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "notificationType": {
+      "type": "enumeration",
+      "enum": [
+        "instant",
+        "daily",
+        "weekly"
+      ],
+      "default": "instant"
+    }
+  }
+}

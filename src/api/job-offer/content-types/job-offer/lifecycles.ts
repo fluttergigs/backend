@@ -11,11 +11,13 @@ export default {
       await twitterService.createTweet({
         text: twitterService.buildJobTweet(result)
       });
+      //insert the job offer into the job queue to be sent to the users
 
+      await strapi.service('api::job-email-queue.job-email-queue').addJobToQueue(result.id);
     } catch (err) {
 
       //@ts-ignore
-      strapi.log.error('Failed to send new posted job tweet:', err);
+      strapi.log.error('Failed to handle post job creation:', err);
     }
   }
 };
