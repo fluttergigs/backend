@@ -1,5 +1,4 @@
 export type InstantJobOfferEmailTemplateData = {
-  username: string;
   jobTitle: string;
   companyName: string;
   location: string;
@@ -119,7 +118,6 @@ const getInstantJobOfferEmailTemplate = (data: InstantJobOfferEmailTemplateData)
 </html>
 
  `.replace('{{current_year}}', new Date().getFullYear().toString())
-    .replace('{{user_name}}', data.username)
     .replace('{{job_title}}', data.jobTitle)
     .replace('{{company_name}}', data.companyName)
     .replace('{{location}}', data.location)

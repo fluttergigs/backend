@@ -55,42 +55,44 @@ export default factories.createCoreService('api::job-email-queue.job-email-queue
 
 
     async processIndividualEmails(pendingQueue: any[]) {
+        const jobOffer = pendingQueue[0].jobOffer;
+        if (!jobOffer?.title) {
+            throw new Error('Missing job data');
+        }
 
+        const subject = `🚀 New Flutter Opportunity: ${jobOffer.title} at ${jobOffer.companyName}`;
         const emailService = new ResendMailService()
-        for (const queueItem of pendingQueue) {
-            const {user, jobOffer, id} = queueItem;
-
-            try {
-                if (!user?.email || !jobOffer?.title) {
-                    throw new Error('Missing user email or job data');
-                }
-
-                // Compose email
-                const subject = `🚀 New Flutter Opportunity: ${jobOffer.title} at ${jobOffer.companyName}`;
-
-                await emailService.sendEmail({
-                    to: [user.email],
+        try {
+            await emailService.dispatchBroadcast(
+                {
                     subject,
                     html: getInstantJobOffer({
-                        username: user.username,
                         jobSlug: jobOffer.slug,
                         companyName: jobOffer.companyName,
                         jobTitle: jobOffer.title,
                         location: JobFormatter.formatWorkPermits(jobOffer.workPermits),
                         remoteFriendly: jobOffer.remoteOptions.includes('fullRemote') ? 'Yes' : 'No'
-                    })
-                });
+                    }),
+                    audienceId: process.env.GENERAL_RESEND_AUDIENCE_ID
+                },
+                {
+                    scheduledAt: 'in 1 min'
+                }
+            )
 
-                // Update queue status
+            for (const queueItem of pendingQueue) {
+                const {id} = queueItem;
 
                 await strapi.db.query('api::job-email-queue.job-email-queue').update({
                     where: {id},
                     data: {state: 'sent'},
                 })
+            }
+        } catch (error) {
+            strapi.log.error(`❌ Failed to broadcast emails`, error);
 
-                strapi.log.info(`✅ Email sent to ${user.email}`);
-            } catch (error) {
-                strapi.log.error(`❌ Failed to send email to user ${user?.email}:`, error);
+            for (const queueItem of pendingQueue) {
+                const {id} = queueItem;
 
                 await strapi.db.query('api::job-email-queue.job-email-queue').update({
                     where: {id},
@@ -116,20 +118,7 @@ export default factories.createCoreService('api::job-email-queue.job-email-queue
                 }
             },
             fields: ['id'],
-        }) || await strapi.documents("plugin::users-permissions.user").findMany({fields: ['id'],});
-
-        /* const users = await strapi.documents("plugin::users-permissions.user").findMany({
-             filters: {
-                 jobNotificationPreference: {
-                     $in: [
-                         JobNotificationPreferenceEnum.instant,
-                         JobNotificationPreferenceEnum.daily,
-                         JobNotificationPreferenceEnum.weekly,
-                     ],
-                 }
-             },
-             fields: ['id'],
-         })*/
+        });
 
         if (!users.length) {
             strapi.log.info('No users eligible for job email notifications.');

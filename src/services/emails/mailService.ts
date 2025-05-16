@@ -2,11 +2,19 @@ export interface Contact {
   email: string;
   firstName?: string;
   lastName?: string;
+  audienceId?: string;
 
   [key: string]: any;
 }
 
-export interface Mail{
+export interface Broadcast {
+  audienceId: string,
+  from?: string,
+  subject: string,
+  html: string,
+}
+
+export interface Mail {
   to: string | string[];
   subject: string;
   html?: string;
@@ -16,7 +24,13 @@ export interface Mail{
   cc?: string;
   bcc?: string;
   attachments?: Array<{ filename: string; path: string }>;
+
   [key: string]: any;
+}
+
+export interface SendBroadcastOptions<T, U> {
+  scheduledAt: T,
+  audienceId?: U
 }
 
 export abstract class MailService {
@@ -25,5 +39,9 @@ export abstract class MailService {
 
   abstract sendEmail<T extends Mail>(data: T): Promise<void>;
 
-  abstract sendBulkEmail<T>(data: T): Promise<void>;
+  abstract sendBulkEmail<T extends Mail>(data: T[]): Promise<void>;
+
+  abstract createBroadcast<T extends Broadcast>(data: T): Promise<any>;
+
+  abstract sendBroadcast<T extends SendBroadcastOptions<any, any>>(data: T): Promise<void>;
 }

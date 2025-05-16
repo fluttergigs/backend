@@ -1,4 +1,4 @@
-import {Contact, Mail, MailService} from "./mailService";
+import {Broadcast, Contact, Mail, MailService, SendBroadcastOptions} from "./mailService";
 
 /**
  * ResendMailService is a concrete implementation of the MailService interface.
@@ -11,13 +11,46 @@ const resend = new Resend(process.env.RESEND_API_KEY || '');
 
 export class ResendMailService implements MailService {
 
+  async createBroadcast<T extends Broadcast>(data: T): Promise<any> {
+    try {
+      strapi.log.info(`Creating broadcast with subject: ${data.subject} for audience ${data.audienceId}`);
+      return await resend.broadcasts.create({
+        from: data.from || 'FlutterGigs <hello@fluttergigs.com>',
+        audienceId: data.audienceId,
+        html: data.html,
+        subject: data.subject,
+      });
+    } catch (e) {
+      strapi.log.error(`Error creating broadcast`, e);
+    }
+  }
+
+  async sendBroadcast(data: SendBroadcastOptions<string, string>): Promise<void> {
+    try {
+      strapi.log.info(`Sending broadcast with subject in ${data.scheduledAt} for audience ${data.audienceId}`);
+      await resend.broadcasts.send(data.audienceId, {
+        scheduledAt: data.scheduledAt,
+      })
+    } catch (e) {
+      strapi.log.error(`Error sending broadcast`, e);
+    }
+  }
+
+  async dispatchBroadcast<T extends Broadcast, U extends SendBroadcastOptions<string, string>>(broadcast: T, sendOptions: U) {
+    const {id} = await this.createBroadcast(broadcast)
+
+    sendOptions.audienceId = id;
+
+    await this.sendBroadcast(sendOptions)
+  }
+
   async saveContact<T extends Contact>(data: T): Promise<void> {
     await resend.contacts.create({
       email: data.email,
-      firstName: data.firstName,
-      lastName: data.lastName,
+      firstName: data.firstName || '',
+      lastName: data.lastName || '',
       unsubscribed: false,
-      audienceId: '0c8b3169-95bb-4473-a93d-a778ec9d8bac',
+      audienceId: data.audienceId
     });
 
   }
@@ -36,8 +69,20 @@ export class ResendMailService implements MailService {
     }
   }
 
-  async sendBulkEmail<T>(data: T): Promise<void> {
-    // Implement the logic to send bookmark email using Resend API
-    console.log("Sending bookmark email using Resend API", data);
+  async sendBulkEmail<T extends Mail>(data: T[]): Promise<void> {
+    strapi.log.info("Sending bookmark email using Resend API", data);
+
+    const payload = data.map(item => ({
+      from: item.from || 'FlutterGigs <hello@fluttergigs.com>',
+      to: item.to,
+      subject: item.subject,
+      html: item.text || item.html,
+    }));
+
+    try {
+      await resend.batch.send(payload)
+    } catch (e) {
+      strapi.log.error(`Error sending batch emails`, e);
+    }
   }
 }

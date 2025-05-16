@@ -8,6 +8,9 @@ export default {
 
       const twitterService = new TwitterWrapperImpl();
 
+      //wait 2 minutes before creating the tweet
+      await new Promise(resolve => setTimeout(resolve, 2 * 60 * 1000));
+
       await twitterService.createTweet({
         text: twitterService.buildJobTweet(result)
       });

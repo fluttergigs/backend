@@ -6,11 +6,11 @@ export default {
       const {result} = event;
       const mailService = new ResendMailService();
 
-
       await mailService.saveContact({
         email: result.email,
         firstName: result.firstName,
         lastName: result.lastName,
+        audienceId: process.env.GENERAL_RESEND_AUDIENCE_ID,
       })
     } catch (err) {
 
