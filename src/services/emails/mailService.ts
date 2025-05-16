@@ -30,7 +30,7 @@ export interface Mail {
 
 export interface SendBroadcastOptions<T, U> {
   scheduledAt: T,
-  audienceId?: U
+  id?: U
 }
 
 export abstract class MailService {

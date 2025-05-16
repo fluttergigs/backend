@@ -12,6 +12,7 @@ export enum JobQueueEnum {
     pending = 'pending',
     sent = 'sent',
     failed = 'failed',
+    processing = 'processing',
 }
 
 export enum JobNotificationPreferenceEnum {
@@ -31,9 +32,7 @@ export default factories.createCoreService('api::job-email-queue.job-email-queue
         status: JobQueueEnum.pending,
         notificationType: JobNotificationPreferenceEnum.instant
     }) {
-
         strapi.log.info(`🔔 Starting ${params.notificationType} JobEmailQueue processing...`);
-
 
         const emailQueue = await strapi.db.query('api::job-email-queue.job-email-queue').findMany({
             where: {
@@ -51,6 +50,29 @@ export default factories.createCoreService('api::job-email-queue.job-email-queue
         if (params.notificationType == JobNotificationPreferenceEnum.instant) {
             await this.processIndividualEmails(emailQueue)
         }
+
+        /*   // grab IDs
+           const ids = emailQueue.map(q => q.id);
+
+           await strapi.db.query('api::job-email-queue.job-email-queue').updateMany({
+               where: {id: {$in: ids}, state: params.status},
+               data: {state: JobQueueEnum.processing},
+           });
+
+           // now re-fetch only processing items and send them
+           const toSend = await strapi.db.query('api::job-email-queue.job-email-queue').findMany({
+               where: {id: {$in: ids}, state: JobQueueEnum.processing},
+               populate: ['user', 'jobOffer'],
+           });
+
+           if (!toSend.length) {
+               strapi.log.info('No pending job email notifications to process.');
+               return;
+           }
+
+           if (params.notificationType == JobNotificationPreferenceEnum.instant) {
+               await this.processIndividualEmails(toSend)
+           }*/
     },
 
 

@@ -27,8 +27,8 @@ export class ResendMailService implements MailService {
 
   async sendBroadcast(data: SendBroadcastOptions<string, string>): Promise<void> {
     try {
-      strapi.log.info(`Sending broadcast with subject in ${data.scheduledAt} for audience ${data.audienceId}`);
-      await resend.broadcasts.send(data.audienceId, {
+      strapi.log.info(`Sending broadcast ${data.id} with subject in ${data.scheduledAt}`);
+      await resend.broadcasts.send(data.id, {
         scheduledAt: data.scheduledAt,
       })
     } catch (e) {
@@ -39,24 +39,28 @@ export class ResendMailService implements MailService {
   async dispatchBroadcast<T extends Broadcast, U extends SendBroadcastOptions<string, string>>(broadcast: T, sendOptions: U) {
     const {id} = await this.createBroadcast(broadcast)
 
-    sendOptions.audienceId = id;
+    sendOptions.id = id;
 
     await this.sendBroadcast(sendOptions)
   }
 
   async saveContact<T extends Contact>(data: T): Promise<void> {
-    await resend.contacts.create({
-      email: data.email,
-      firstName: data.firstName || '',
-      lastName: data.lastName || '',
-      unsubscribed: false,
-      audienceId: data.audienceId
-    });
+    try {
+      await resend.contacts.create({
+        email: data.email,
+        firstName: data.firstName || '',
+        lastName: data.lastName || '',
+        unsubscribed: false,
+        audienceId: data.audienceId
+      });
 
+      strapi.log.info(`Saved contact ${data.email}`);
+    } catch (e) {
+      strapi.log.error(`Error saving contact`, e);
+    }
   }
 
   async sendEmail<T extends Mail>(data: T): Promise<void> {
-
     try {
       await resend.emails.send({
         from: data.from || 'FlutterGigs <hello@fluttergigs.com>',
@@ -64,6 +68,9 @@ export class ResendMailService implements MailService {
         subject: data.subject,
         html: data.text || data.html,
       });
+
+      strapi.log.info(`Sent email with subject ${data.subject} to ${data.to}`);
+
     } catch (e) {
       strapi.log.error(`Error sending email with subject: ${data.subject}`, e);
     }
