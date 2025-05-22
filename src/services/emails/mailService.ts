@@ -8,11 +8,11 @@ export interface Contact {
 }
 
 export interface Broadcast {
-  audienceId: string,
-  from?: string,
-  subject: string,
-  html: string,
-  name: string
+  audienceId: string;
+  subject: string;
+  html: string;
+  from?: string;
+  name?: string;
 }
 
 export interface Mail {
@@ -30,8 +30,8 @@ export interface Mail {
 }
 
 export interface SendBroadcastOptions<T, U> {
-  scheduledAt: T,
-  id?: U
+  scheduledAt: T;
+  id?: U;
 }
 
 export abstract class MailService {

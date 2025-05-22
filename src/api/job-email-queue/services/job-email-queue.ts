@@ -9,175 +9,176 @@ import {JobFormatter} from "../../../../helpers/JobFormatter";
 // const
 
 export enum JobQueueEnum {
-    pending = 'pending',
-    sent = 'sent',
-    failed = 'failed',
-    processing = 'processing',
+  pending = 'pending',
+  sent = 'sent',
+  failed = 'failed',
+  processing = 'processing',
 }
 
 export enum JobNotificationPreferenceEnum {
-    instant = 'instant',
-    daily = 'daily',
-    weekly = 'weekly'
+  instant = 'instant',
+  daily = 'daily',
+  weekly = 'weekly'
 }
 
 export type JobQueueParams = {
-    status: JobQueueEnum,
-    notificationType: JobNotificationPreferenceEnum
+  status: JobQueueEnum,
+  notificationType: JobNotificationPreferenceEnum
 }
 
 export default factories.createCoreService('api::job-email-queue.job-email-queue', ({strapi}) => ({
 
-    async processEmailQueues(params: JobQueueParams = {
-        status: JobQueueEnum.pending,
-        notificationType: JobNotificationPreferenceEnum.instant
-    }) {
-        strapi.log.info(`🔔 Starting ${params.notificationType} JobEmailQueue processing...`);
+  async processEmailQueues(params: JobQueueParams = {
+    status: JobQueueEnum.pending,
+    notificationType: JobNotificationPreferenceEnum.instant
+  }) {
+    strapi.log.info(`🔔 Starting ${params.notificationType} JobEmailQueue processing...`);
 
-        const emailQueue = await strapi.db.query('api::job-email-queue.job-email-queue').findMany({
-            where: {
-                state: params.status,
-                notificationType: params.notificationType,
-            },
-            populate: ['user', 'jobOffer'],
-        });
+    const emailQueue = await strapi.db.query('api::job-email-queue.job-email-queue').findMany({
+      where: {
+        state: params.status,
+        notificationType: params.notificationType,
+      },
+      populate: ['user', 'jobOffer'],
+    });
 
-        if (!emailQueue.length) {
-            strapi.log.info('No pending job email notifications to process.');
-            return;
-        }
-
-        if (params.notificationType == JobNotificationPreferenceEnum.instant) {
-            await this.processIndividualEmails(emailQueue)
-        }
-
-        /*   // grab IDs
-           const ids = emailQueue.map(q => q.id);
-
-           await strapi.db.query('api::job-email-queue.job-email-queue').updateMany({
-               where: {id: {$in: ids}, state: params.status},
-               data: {state: JobQueueEnum.processing},
-           });
-
-           // now re-fetch only processing items and send them
-           const toSend = await strapi.db.query('api::job-email-queue.job-email-queue').findMany({
-               where: {id: {$in: ids}, state: JobQueueEnum.processing},
-               populate: ['user', 'jobOffer'],
-           });
-
-           if (!toSend.length) {
-               strapi.log.info('No pending job email notifications to process.');
-               return;
-           }
-
-           if (params.notificationType == JobNotificationPreferenceEnum.instant) {
-               await this.processIndividualEmails(toSend)
-           }*/
-    },
-
-
-    async processIndividualEmails(pendingQueue: any[]) {
-        const jobOffer = pendingQueue[0].jobOffer;
-        if (!jobOffer?.title) {
-            throw new Error('Missing job data');
-        }
-
-        const subject = `🚀 New Flutter Opportunity: ${jobOffer.title} at ${jobOffer.companyName}`;
-        const emailService = new ResendMailService()
-        try {
-            await emailService.dispatchBroadcast(
-                {
-                    subject,
-                    html: getInstantJobOffer({
-                        jobSlug: jobOffer.slug,
-                        companyName: jobOffer.companyName,
-                        jobTitle: jobOffer.title,
-                        location: JobFormatter.formatWorkPermits(jobOffer.workPermits),
-                        remoteFriendly: jobOffer.remoteOptions.includes('fullRemote') ? 'Yes' : 'No'
-                    }),
-                    audienceId: process.env.GENERAL_RESEND_AUDIENCE_ID
-                },
-                {
-                    scheduledAt: 'in 1 min'
-                }
-            )
-
-            for (const queueItem of pendingQueue) {
-                const {id} = queueItem;
-
-                await strapi.db.query('api::job-email-queue.job-email-queue').update({
-                    where: {id},
-                    data: {state: 'sent'},
-                })
-            }
-        } catch (error) {
-            strapi.log.error(`❌ Failed to broadcast emails`, error);
-
-            for (const queueItem of pendingQueue) {
-                const {id} = queueItem;
-
-                await strapi.db.query('api::job-email-queue.job-email-queue').update({
-                    where: {id},
-                    data: {state: 'failed'},
-                })
-            }
-        }
-    },
-
-    async addJobToQueue(jobId: number) {
-        if (!jobId) {
-            throw new Error('Job ID is required to generate JobEmailQueue records.');
-        }
-
-        const users = await strapi.documents("plugin::users-permissions.user").findMany({
-            filters: {
-                jobNotificationPreference: {
-                    $in: [
-                        JobNotificationPreferenceEnum.instant,
-                        JobNotificationPreferenceEnum.daily,
-                        JobNotificationPreferenceEnum.weekly,
-                    ],
-                }
-            },
-            fields: ['id'],
-        });
-
-        if (!users.length) {
-            strapi.log.info('No users eligible for job email notifications.');
-            return;
-        }
-
-
-        // Créer les entrées individuellement pour gérer correctement les relations
-        for (const user of users) {
-            await strapi.db.query('api::job-email-queue.job-email-queue').create({
-                data: {
-                    user: user.id,
-                    jobOffer: jobId,
-                    state: JobQueueEnum.pending,
-                    notificationType: user.jobNotificationPreference || JobNotificationPreferenceEnum.instant,
-                }
-            });
-        }
-
-        /* const queueEntries = users.map((user) => ({
-           user: user.documentId,
-           jobOffer: jobId,
-           state: 'pending',
-           notificationType: user.jobNotificationPreference || JobNotificationPreferenceEnum.instant,
-         }));
-
-         // Insert in batches if needed
-         const chunkSize = 500;
-         for (let i = 0; i < queueEntries.length; i += chunkSize) {
-           const chunk = queueEntries.slice(i, i + chunkSize);
-
-           await strapi.db.query('api::job-email-queue.job-email-queue').createMany({data: chunk,})
-
-
-           //Update job email queue with the relations
-         }*/
-
-        strapi.log.info(`Generated ${users.length} JobEmailQueue records for job ID ${jobId}.`);
+    if (!emailQueue.length) {
+      strapi.log.info('No pending job email notifications to process.');
+      return;
     }
+
+    if (params.notificationType == JobNotificationPreferenceEnum.instant) {
+      await this.processIndividualEmails(emailQueue)
+    }
+
+    /*   // grab IDs
+       const ids = emailQueue.map(q => q.id);
+
+       await strapi.db.query('api::job-email-queue.job-email-queue').updateMany({
+           where: {id: {$in: ids}, state: params.status},
+           data: {state: JobQueueEnum.processing},
+       });
+
+       // now re-fetch only processing items and send them
+       const toSend = await strapi.db.query('api::job-email-queue.job-email-queue').findMany({
+           where: {id: {$in: ids}, state: JobQueueEnum.processing},
+           populate: ['user', 'jobOffer'],
+       });
+
+       if (!toSend.length) {
+           strapi.log.info('No pending job email notifications to process.');
+           return;
+       }
+
+       if (params.notificationType == JobNotificationPreferenceEnum.instant) {
+           await this.processIndividualEmails(toSend)
+       }*/
+  },
+
+
+  async processIndividualEmails(pendingQueue: any[]) {
+    const jobOffer = pendingQueue[0].jobOffer;
+    if (!jobOffer?.title) {
+      throw new Error('Missing job data');
+    }
+
+    const subject = `🚀 New Flutter Opportunity: ${jobOffer.title} at ${jobOffer.companyName}`;
+    const emailService = new ResendMailService()
+    try {
+      await emailService.dispatchBroadcast(
+        {
+          subject,
+          name: subject,
+          html: getInstantJobOffer({
+            jobSlug: jobOffer.slug,
+            companyName: jobOffer.companyName,
+            jobTitle: jobOffer.title,
+            location: JobFormatter.formatWorkPermits(jobOffer.workPermits),
+            remoteFriendly: jobOffer.remoteOptions.includes('fullRemote') ? 'Yes' : 'No'
+          }),
+          audienceId: process.env.GENERAL_RESEND_AUDIENCE_ID
+        },
+        {
+          scheduledAt: 'in 1 min'
+        }
+      )
+
+      for (const queueItem of pendingQueue) {
+        const {id} = queueItem;
+
+        await strapi.db.query('api::job-email-queue.job-email-queue').update({
+          where: {id},
+          data: {state: 'sent'},
+        })
+      }
+    } catch (error) {
+      strapi.log.error(`❌ Failed to broadcast emails`, error);
+
+      for (const queueItem of pendingQueue) {
+        const {id} = queueItem;
+
+        await strapi.db.query('api::job-email-queue.job-email-queue').update({
+          where: {id},
+          data: {state: 'failed'},
+        })
+      }
+    }
+  },
+
+  async addJobToQueue(jobId: number) {
+    if (!jobId) {
+      throw new Error('Job ID is required to generate JobEmailQueue records.');
+    }
+
+    const users = await strapi.documents("plugin::users-permissions.user").findMany({
+      filters: {
+        jobNotificationPreference: {
+          $in: [
+            JobNotificationPreferenceEnum.instant,
+            JobNotificationPreferenceEnum.daily,
+            JobNotificationPreferenceEnum.weekly,
+          ],
+        }
+      },
+      fields: ['id'],
+    });
+
+    if (!users.length) {
+      strapi.log.info('No users eligible for job email notifications.');
+      return;
+    }
+
+
+    // Créer les entrées individuellement pour gérer correctement les relations
+    for (const user of users) {
+      await strapi.db.query('api::job-email-queue.job-email-queue').create({
+        data: {
+          user: user.id,
+          jobOffer: jobId,
+          state: JobQueueEnum.pending,
+          notificationType: user.jobNotificationPreference || JobNotificationPreferenceEnum.instant,
+        }
+      });
+    }
+
+    /* const queueEntries = users.map((user) => ({
+       user: user.documentId,
+       jobOffer: jobId,
+       state: 'pending',
+       notificationType: user.jobNotificationPreference || JobNotificationPreferenceEnum.instant,
+     }));
+
+     // Insert in batches if needed
+     const chunkSize = 500;
+     for (let i = 0; i < queueEntries.length; i += chunkSize) {
+       const chunk = queueEntries.slice(i, i + chunkSize);
+
+       await strapi.db.query('api::job-email-queue.job-email-queue').createMany({data: chunk,})
+
+
+       //Update job email queue with the relations
+     }*/
+
+    strapi.log.info(`Generated ${users.length} JobEmailQueue records for job ID ${jobId}.`);
+  }
 }));
