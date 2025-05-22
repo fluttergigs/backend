@@ -19,6 +19,7 @@ export class ResendMailService implements MailService {
         audienceId: data.audienceId,
         html: data.html,
         subject: data.subject,
+        name: `Flutter Tip of the Day - ${data.subject}`,
       });
     } catch (e) {
       strapi.log.error(`Error creating broadcast`, e);

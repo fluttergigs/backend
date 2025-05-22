@@ -12,6 +12,7 @@ export interface Broadcast {
   from?: string,
   subject: string,
   html: string,
+  name: string
 }
 
 export interface Mail {

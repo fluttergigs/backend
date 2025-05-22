@@ -756,7 +756,7 @@ export interface ApiSnippetSnippet extends Struct.CollectionTypeSchema {
     singularName: 'snippet';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     code: Schema.Attribute.Text & Schema.Attribute.Required;
