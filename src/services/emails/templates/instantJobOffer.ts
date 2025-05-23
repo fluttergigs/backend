@@ -84,7 +84,7 @@ const getInstantJobOfferEmailTemplate = (data: InstantJobOfferEmailTemplateData)
   <div class="container">
     <h1>🚀 New Flutter Job Just Dropped!</h1>
 
-    <p>Hi FlutterGigster,</p>
+    <p>Hi FlutterGigger,</p>
     <p>We've got a fresh Flutter opportunity you might love:</p>
 
     <ul class="job-info">

@@ -4,14 +4,14 @@ import {Broadcast, Contact, Mail, MailService, SendBroadcastOptions} from "./mai
  * ResendMailService is a concrete implementation of the MailService interface.
  * It uses the Resend API to send emails and save contacts.
  */
-import {Resend} from 'resend';
+import {Resend, SendBroadcastResponse} from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY || '');
 
 
 export class ResendMailService implements MailService {
 
-  async createBroadcast<T extends Broadcast>(data: T): Promise<any> {
+  async createBroadcast<T extends Broadcast>(data: T): Promise<SendBroadcastResponse> {
     try {
       strapi.log.info(`Creating broadcast with subject: ${data.subject} for audience ${data.audienceId}`);
       return await resend.broadcasts.create({
@@ -28,7 +28,7 @@ export class ResendMailService implements MailService {
 
   async sendBroadcast(data: SendBroadcastOptions<string, string>): Promise<void> {
     try {
-      strapi.log.info(`Sending broadcast ${data.id} with subject in ${data.scheduledAt}`);
+      strapi.log.info(`Sending broadcast ${data.id} in ${data.scheduledAt}`);
       await resend.broadcasts.send(data.id, {
         scheduledAt: data.scheduledAt,
       })
@@ -38,9 +38,9 @@ export class ResendMailService implements MailService {
   }
 
   async dispatchBroadcast<T extends Broadcast, U extends SendBroadcastOptions<string, string>>(broadcast: T, sendOptions: U) {
-    const {id} = await this.createBroadcast(broadcast)
+    const {data} = await this.createBroadcast(broadcast)
 
-    sendOptions.id = id;
+    sendOptions.id = data.id;
 
     await this.sendBroadcast(sendOptions)
   }
