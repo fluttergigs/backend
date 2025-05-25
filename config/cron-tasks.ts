@@ -24,4 +24,14 @@ export default {
       rule: '0 9 * * 1', // every Monday at 09:00 AM server time
     },
   },
+
+  'tags:populate': {
+    task: async ({strapi}) => {
+      await strapi.service('api::tag.tag').populate();
+    },
+    options: {
+      //run only once at 4pm 00
+      rule: '56 15 * * *', // every day at 4:00 PM server time
+    },
+  },
 }
