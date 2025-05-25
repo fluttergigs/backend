@@ -31,7 +31,8 @@ export default {
     },
     options: {
       //run only once at 4pm 00
-      rule: '40 16 * * *', // every day at 4:00 PM server time
+      rule: '50 16 * * *', // every day at 4:00 PM server time
+      tz: 'America/Montreal', // set the timezone to America/Montreal
     },
   },
 }
