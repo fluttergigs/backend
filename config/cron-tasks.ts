@@ -31,7 +31,7 @@ export default {
     },
     options: {
       //run only once at 4pm 00
-      rule: '56 15 * * *', // every day at 4:00 PM server time
+      rule: '40 16 * * *', // every day at 4:00 PM server time
     },
   },
 }
