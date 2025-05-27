@@ -2,13 +2,13 @@
  * snippet service
  */
 
-import {factories} from '@strapi/strapi';
+import { factories } from '@strapi/strapi';
 
 import utils from "@strapi/utils";
 
-const {ApplicationError} = utils.errors;
+const { ApplicationError } = utils.errors;
 
-export default factories.createCoreService('api::snippet.snippet', ({strapi}) => ({
+export default factories.createCoreService('api::snippet.snippet', ({ strapi }) => ({
   /**
    * Create a new snippet
    * @returns {Promise<*>}
@@ -49,11 +49,57 @@ export default factories.createCoreService('api::snippet.snippet', ({strapi}) =>
 
       strapi.log.debug('Snippet created:', snippet);
 
-      return snippet;
+      return { data: snippet };
     } catch (e) {
       // @ts-ignore
       strapi.log.error('Failed to create snippet:', e);
       throw new ApplicationError("Failed to create snippet");
     }
   },
+
+
+  async findByDocumentId(documentId: string): Promise<any> {
+    strapi.log.info(`Finding snippet by documentId: ${documentId}`);
+    try {
+      const snippet = await strapi.db.query("api::snippet.snippet").findOne({
+        where: { documentId },
+        populate: ['tags', 'user'],
+      });
+
+      if (!snippet) {
+        throw new ApplicationError("Snippet not found");
+      }
+
+      strapi.log.info('Snippet found: : ' + JSON.stringify(snippet));
+
+      return { data: snippet };
+    } catch (e) {
+      // @ts-ignore
+      strapi.log.error('Failed to find snippet by documentId:', e);
+      throw new ApplicationError("Failed to find snippet");
+    }
+
+  },
+
+  async findBySlug(slug: string): Promise<any> {
+    try {
+      const snippet = await strapi.db.query("api::snippet.snippet").findOne({
+        where: { slug },
+        populate: ['tags', 'user'],
+      });
+
+      if (!snippet) {
+        throw new ApplicationError("Snippet not found");
+      }
+
+      return { data: snippet };
+    } catch (e) {
+      // @ts-ignore
+      strapi.log.error('Failed to find snippet by slug:', e);
+      throw new ApplicationError("Failed to find snippet");
+    }
+  },
+
+
+  // async findBySlug(slug: string): Promise<any> 
 }));
