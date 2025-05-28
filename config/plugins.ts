@@ -1,4 +1,4 @@
-export default ({env}) => ({
+export default ({ env }) => ({
   email: {
     config: {
       provider: 'strapi-provider-email-resend',
@@ -6,8 +6,8 @@ export default ({env}) => ({
         apiKey: env('RESEND_API_KEY'), // Required
       },
       settings: {
-        defaultFrom: 'hello@fluttergigs.com',
-        defaultReplyTo: 'no-reply@fluttergigs.com',
+        defaultFrom: 'team@fluttergigs.com',
+        defaultReplyTo: 'team@fluttergigs.com',
       },
     }
   },

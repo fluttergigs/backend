@@ -1,10 +1,10 @@
-import {Broadcast, Contact, Mail, MailService, SendBroadcastOptions} from "./mailService";
+import { Broadcast, Contact, Mail, MailService, SendBroadcastOptions } from "./mailService";
 
 /**
  * ResendMailService is a concrete implementation of the MailService interface.
  * It uses the Resend API to send emails and save contacts.
  */
-import {Resend, SendBroadcastResponse} from 'resend';
+import { Resend, SendBroadcastResponse } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY || '');
 
@@ -15,7 +15,7 @@ export class ResendMailService implements MailService {
     try {
       strapi.log.info(`Creating broadcast with subject: ${data.subject} for audience ${data.audienceId}`);
       return await resend.broadcasts.create({
-        from: data.from || 'FlutterGigs <hello@fluttergigs.com>',
+        from: data.from || 'FlutterGigs <team@fluttergigs.com>',
         audienceId: data.audienceId,
         html: data.html,
         subject: data.subject,
@@ -38,7 +38,7 @@ export class ResendMailService implements MailService {
   }
 
   async dispatchBroadcast<T extends Broadcast, U extends SendBroadcastOptions<string, string>>(broadcast: T, sendOptions: U) {
-    const {data} = await this.createBroadcast(broadcast)
+    const { data } = await this.createBroadcast(broadcast)
 
     sendOptions.id = data.id;
 
@@ -64,7 +64,7 @@ export class ResendMailService implements MailService {
   async sendEmail<T extends Mail>(data: T): Promise<void> {
     try {
       await resend.emails.send({
-        from: data.from || 'FlutterGigs <hello@fluttergigs.com>',
+        from: data.from || 'FlutterGigs <team@fluttergigs.com>',
         to: data.to,
         subject: data.subject,
         html: data.text || data.html,
@@ -81,7 +81,7 @@ export class ResendMailService implements MailService {
     strapi.log.info("Sending bookmark email using Resend API", data);
 
     const payload = data.map(item => ({
-      from: item.from || 'FlutterGigs <hello@fluttergigs.com>',
+      from: item.from || 'FlutterGigs <team@fluttergigs.com>',
       to: item.to,
       subject: item.subject,
       html: item.text || item.html,
