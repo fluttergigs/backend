@@ -112,6 +112,26 @@
       "relation": "oneToMany",
       "target": "api::job-email-queue.job-email-queue",
       "mappedBy": "user"
+    },
+    "subscriptionStatus": {
+      "type": "enumeration",
+      "enum": [
+        "free",
+        "paid"
+      ],
+      "default": "free"
+    },
+    "subscriptionId": {
+      "type": "string",
+      "private": true
+    },
+    "interviewUsageCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "lastUsageReset": {
+      "type": "datetime",
+      "default": "now"
     }
   }
 }

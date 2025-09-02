@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "interview_usages",
+  "info": {
+    "singularName": "interview-usage",
+    "pluralName": "interview-usages",
+    "displayName": "Interview Usage",
+    "description": "Track interview usage per user"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true
+    },
+    "usageCount": {
+      "type": "integer",
+      "default": 0,
+      "required": true
+    },
+    "monthlyLimit": {
+      "type": "integer",
+      "default": 5,
+      "required": true
+    },
+    "resetDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "subscriptionTier": {
+      "type": "enumeration",
+      "enum": [
+        "free",
+        "paid"
+      ],
+      "default": "free",
+      "required": true
+    },
+    "lastUsed": {
+      "type": "datetime"
+    }
+  }
+}
