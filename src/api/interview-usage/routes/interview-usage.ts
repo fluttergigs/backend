@@ -26,6 +26,15 @@ export default {
     },
     {
       method: 'GET',
+      path: '/interview-usages',
+      handler: 'interview-usage.getUsageHistory',
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: 'GET',
       path: '/subscription-status',
       handler: 'interview-usage.getSubscriptionStatus',
       config: {

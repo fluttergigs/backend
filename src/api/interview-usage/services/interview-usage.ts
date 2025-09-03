@@ -133,8 +133,8 @@ export default factories.createCoreService('api::interview-usage.interview-usage
    */
   getUsageLimits(subscriptionStatus: string) {
     const limits = {
-      free: { monthlyLimit: 5 },
-      paid: { monthlyLimit: 50 }
+      free: { monthlyLimit: 3 },
+      paid: { monthlyLimit: 20 }
     };
 
     return limits[subscriptionStatus] || limits.free;
@@ -165,6 +165,39 @@ export default factories.createCoreService('api::interview-usage.interview-usage
     } catch (error) {
       throw new ValidationError("Validation failed", error.errors);
     }
+  },
+
+  /**
+   * Get interview usage history for a user (last 6 months)
+   */
+  async getUsageHistory(userId: number): Promise<any[]> {
+    // Get user subscription status to determine the limit
+    const user = await strapi.query("plugin::users-permissions.user").findOne({
+      where: { id: userId },
+      select: ['subscriptionStatus']
+    });
+
+    if (!user) {
+      throw new ApplicationError("User not found");
+    }
+
+    const limits = this.getUsageLimits(user.subscriptionStatus);
+    
+    // Query the interview-usage records for this user, last 6 months
+    const usageRecords = await strapi.query('api::interview-usage.interview-usage').findMany({
+      where: {
+        userId: userId
+      },
+      orderBy: { month: 'desc' },
+      limit: 6
+    });
+
+    return usageRecords.map(usage => ({
+      month: usage.month,
+      count: usage.count,
+      limit: limits.monthlyLimit,
+      sessions: usage.sessions?.length || 0,
+    }));
   },
 
   /**

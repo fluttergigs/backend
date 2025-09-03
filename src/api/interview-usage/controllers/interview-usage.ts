@@ -40,6 +40,21 @@ export default factories.createCoreController('api::interview-usage.interview-us
     }
   },
 
+  async getUsageHistory(ctx) {
+    try {
+      const user = ctx.state.user;
+      if (!user) {
+        return ctx.unauthorized('You must be authenticated to access this resource');
+      }
+
+      const usageHistory = await strapi.service('api::interview-usage.interview-usage').getUsageHistory(user.id);
+      return { data: usageHistory };
+    } catch (error) {
+      console.error('Error getting usage history:', error);
+      return ctx.internalServerError('Unable to get usage history');
+    }
+  },
+
   async getSubscriptionStatus(ctx) {
     try {
       const user = ctx.state.user;
