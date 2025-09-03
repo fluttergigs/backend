@@ -116,17 +116,111 @@ After making changes, ALWAYS test these scenarios:
 ### API Structure
 Each API in `src/api/` follows Strapi conventions:
 - `routes/`: API route definitions
-- `controllers/`: Request handlers
-- `services/`: Business logic
+- `controllers/`: Request handlers (keep these thin!)
+- `services/`: Business logic (prefer this for complex operations)
 - `content-types/`: Data model schemas
+- `validation/`: Request validation schemas
+
+### Architecture Principles
+
+**PREFER SERVICES OVER FAT CONTROLLERS** - Follow Single Responsibility Principle and Separation of Concerns:
+
+**✅ Good Pattern (Thin Controllers):**
+```typescript
+// controllers/job-offer.ts
+export default factories.createCoreController('api::job-offer.job-offer', ({strapi}) => ({
+  async create(ctx) {
+    return await strapi.service('api::job-offer.job-offer').create(ctx.request.body.data);
+  },
+  
+  async findOneBySlug(ctx) {
+    return await strapi.service('api::job-offer.job-offer').findOneBySlug(ctx.params.slug);
+  }
+}));
+```
+
+**✅ Good Pattern (Services with Business Logic):**
+```typescript
+// services/job-offer.ts
+export default factories.createCoreService('api::job-offer.job-offer', ({strapi}) => ({
+  async create(data): Promise<any> {
+    // Validation
+    const { company, title } = await JobOfferCreateSchema.validate(data);
+    
+    // Business logic
+    const companyCheck = await strapi.db.query("api::company.company").findOne({
+      where: {id: company},
+    });
+    
+    if (!companyCheck) {
+      throw new ApplicationError("This company does not exist");
+    }
+    
+    // More business logic...
+    return await strapi.documents("api::job-offer.job-offer").create({...});
+  }
+}));
+```
+
+**❌ Avoid (Fat Controllers):**
+```typescript
+// DON'T put business logic, validation, or complex operations directly in controllers
+export default factories.createCoreController('api::job-offer.job-offer', ({strapi}) => ({
+  async create(ctx) {
+    // ❌ Avoid validation logic in controllers
+    const { company, title } = await JobOfferCreateSchema.validate(ctx.request.body.data);
+    
+    // ❌ Avoid business logic in controllers
+    const companyCheck = await strapi.db.query("api::company.company").findOne({...});
+    
+    // ❌ This should be in a service instead
+    return await strapi.documents("api::job-offer.job-offer").create({...});
+  }
+}));
+```
+
+**Guidelines:**
+- **Controllers**: Handle HTTP concerns (request/response, status codes, authentication)
+- **Services**: Handle business logic, validation, data processing, external API calls
+- **Validation**: Use dedicated validation schemas in `validation/` directories
+- **Database Operations**: Encapsulate complex queries in services
+- **Error Handling**: Use proper Strapi error types (`ApplicationError`, `ValidationError`)
+- **Reusability**: Services can be called from multiple controllers or other services
 
 ## Common Tasks
 
 ### Adding New API Endpoints
 1. Use Strapi CLI: `npm run strapi generate api <api-name>`
 2. Define content types in `src/api/<api-name>/content-types/`
-3. Implement controllers in `src/api/<api-name>/controllers/`
-4. Add custom services in `src/api/<api-name>/services/`
+3. **Keep controllers thin** - delegate to services for business logic
+4. **Implement business logic in services** in `src/api/<api-name>/services/`
+5. Add validation schemas in `src/api/<api-name>/validation/`
+6. Follow the existing patterns in `job-offer` and `company` APIs
+
+**Example Service-First Approach:**
+```typescript
+// 1. Create validation schema first
+export const MyEntityCreateSchema = yup.object({
+  name: yup.string().required(),
+  email: yup.string().email().required(),
+});
+
+// 2. Implement service with business logic
+export default factories.createCoreService('api::my-entity.my-entity', ({strapi}) => ({
+  async create(data) {
+    const validatedData = await MyEntityCreateSchema.validate(data);
+    // Business logic here
+    return await strapi.documents("api::my-entity.my-entity").create({data: validatedData});
+  }
+}));
+
+// 3. Keep controller minimal
+export default factories.createCoreController('api::my-entity.my-entity', ({strapi}) => ({
+  async create(ctx) {
+    return await strapi.service('api::my-entity.my-entity').create(ctx.request.body.data);
+  }
+}));
+```
 
 ### Database Operations
 - Default: SQLite database stored in `.tmp/data.db`
@@ -158,11 +252,19 @@ Each API in `src/api/` follows Strapi conventions:
 
 ### Making Changes
 1. Always run the bootstrap steps first if working with a fresh clone
-2. Make minimal changes following existing patterns
-3. Test changes with `npm run develop`
-4. Verify admin panel still loads correctly
-5. Build to check for TypeScript errors: `npm run build`
-6. Test API endpoints manually or via admin panel
+2. **Follow service-first architecture** - keep controllers thin, put business logic in services
+3. Make minimal changes following existing patterns in `job-offer` and `company` APIs
+4. Test changes with `npm run develop`
+5. Verify admin panel still loads correctly
+6. Build to check for TypeScript errors: `npm run build`
+7. Test API endpoints manually or via admin panel
+
+**Code Quality Guidelines:**
+- **Single Responsibility**: Each service method should have one clear purpose
+- **Separation of Concerns**: Controllers handle HTTP, services handle business logic
+- **Validation**: Always validate input data using dedicated schemas
+- **Error Handling**: Use appropriate Strapi error types with descriptive messages
+- **Consistency**: Follow patterns established in existing `job-offer` and `company` services
 
 ### Performance Notes
 - Development server takes ~6 seconds to start
