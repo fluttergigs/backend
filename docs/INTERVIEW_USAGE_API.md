@@ -1,6 +1,6 @@
 # Interview Usage API Documentation
 
-This API provides endpoints for managing interview usage tracking with subscription-based access control.
+This API provides endpoints for managing interview usage tracking with plan-based access control.
 
 ## Endpoints
 
@@ -17,6 +17,7 @@ Returns the current month's usage and limits for the authenticated user.
     "currentUsage": 2,
     "monthlyLimit": 3,
     "subscriptionTier": "free",
+    "planName": "Free Plan",
     "canUseInterview": true,
     "resetDate": "2025-02-01T00:00:00.000Z"
   }
@@ -36,6 +37,7 @@ Increments the interview usage count for the authenticated user.
     "currentUsage": 3,
     "monthlyLimit": 3,
     "subscriptionTier": "free",
+    "planName": "Free Plan",
     "canUseInterview": false,
     "resetDate": "2025-02-01T00:00:00.000Z"
   }
@@ -80,7 +82,13 @@ Returns the subscription status for the authenticated user.
   "data": {
     "subscriptionStatus": "free",
     "subscriptionId": null,
-    "isPaid": false
+    "isPaid": false,
+    "plan": {
+      "name": "free",
+      "displayName": "Free Plan",
+      "interviewsPerMonth": 3,
+      "features": ["3 interview sessions per month", "Basic question bank", "Progress tracking"]
+    }
   }
 }
 ```
@@ -95,7 +103,7 @@ Updates the subscription status for the authenticated user.
 ```json
 {
   "data": {
-    "subscriptionStatus": "paid",
+    "planName": "paid",
     "subscriptionId": "sub_123456789"
   }
 }
@@ -108,18 +116,51 @@ Updates the subscription status for the authenticated user.
     "subscriptionStatus": "paid",
     "subscriptionId": "sub_123456789",
     "isPaid": true,
-    "newLimits": {
-      "monthlyLimit": 20
+    "plan": {
+      "name": "paid",
+      "displayName": "Premium Plan",
+      "interviewsPerMonth": 20,
+      "features": ["20 interview sessions per month", "Full question bank", "Advanced analytics", "Priority support"]
     }
   }
 }
 ```
 
-## Usage Limits
+## Available Plans
 
-- **Free tier**: 3 interviews per month
-- **Paid tier**: 20 interviews per month
+### Free Plan
+- **Name**: `free`
+- **Display Name**: Free Plan
+- **Interviews per month**: 3
+- **Features**: 
+  - 3 interview sessions per month
+  - Basic question bank
+  - Progress tracking
+
+### Premium Plan
+- **Name**: `paid`
+- **Display Name**: Premium Plan
+- **Interviews per month**: 20
+- **Features**: 
+  - 20 interview sessions per month
+  - Full question bank
+  - Advanced analytics
+  - Priority support
+
+## Plan Management
+
+Plans are now stored in a dedicated `Plan` model for better scalability and flexibility. This allows for:
+- Easy addition of new plans
+- Dynamic plan features and limits
+- Better data modeling separation
+- Centralized plan configuration
+
+## Usage Tracking
+
 - Usage resets automatically on the 1st of each month
+- Each month gets its own usage record
+- Historical usage data is preserved
+- Limits are dynamically fetched from the associated plan
 
 ## Authentication
 
@@ -146,6 +187,16 @@ Authorization: Bearer <your_jwt_token>
   "error": {
     "status": 400,
     "message": "Monthly interview limit exceeded"
+  }
+}
+```
+
+### 400 Bad Request (Invalid plan)
+```json
+{
+  "error": {
+    "status": 400,
+    "message": "Plan 'invalid-plan' not found or inactive"
   }
 }
 ```

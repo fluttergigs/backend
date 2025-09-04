@@ -82,7 +82,7 @@ export default factories.createCoreController('api::interview-usage.interview-us
       
       const status = await strapi.service('api::interview-usage.interview-usage').updateSubscriptionStatus(
         user.id, 
-        validatedData.subscriptionStatus, 
+        validatedData.planName, 
         validatedData.subscriptionId
       );
       return { data: status };

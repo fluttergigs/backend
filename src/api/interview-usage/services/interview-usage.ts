@@ -11,7 +11,7 @@ export default factories.createCoreService('api::interview-usage.interview-usage
   async getCurrentUsage(userId: number): Promise<any> {
     const user = await strapi.query("plugin::users-permissions.user").findOne({
       where: { id: userId },
-      select: ['subscriptionStatus']
+      populate: ['plan']
     });
 
     if (!user) {
@@ -39,14 +39,15 @@ export default factories.createCoreService('api::interview-usage.interview-usage
       });
     }
 
-    const limits = this.getUsageLimits(user.subscriptionStatus);
+    const plan = user.plan || await this.getDefaultPlan();
     const currentUsage = currentUsageRecord.count || 0;
 
     return {
       currentUsage,
-      monthlyLimit: limits.monthlyLimit,
-      subscriptionTier: user.subscriptionStatus || 'free',
-      canUseInterview: currentUsage < limits.monthlyLimit,
+      monthlyLimit: plan.interviewsPerMonth,
+      subscriptionTier: plan.name,
+      planName: plan.displayName,
+      canUseInterview: currentUsage < plan.interviewsPerMonth,
       resetDate: this.getNextResetDate()
     };
   },
@@ -88,26 +89,43 @@ export default factories.createCoreService('api::interview-usage.interview-usage
   async getSubscriptionStatus(userId: number): Promise<any> {
     const user = await strapi.query("plugin::users-permissions.user").findOne({
       where: { id: userId },
-      select: ['subscriptionStatus', 'subscriptionId']
+      populate: ['plan']
     });
 
     if (!user) {
       throw new ApplicationError("User not found");
     }
 
+    const plan = user.plan || await this.getDefaultPlan();
+
     return {
-      subscriptionStatus: user.subscriptionStatus || 'free',
+      subscriptionStatus: plan.name,
       subscriptionId: user.subscriptionId,
-      isPaid: user.subscriptionStatus === 'paid'
+      isPaid: plan.name !== 'free',
+      plan: {
+        name: plan.name,
+        displayName: plan.displayName,
+        interviewsPerMonth: plan.interviewsPerMonth,
+        features: plan.features
+      }
     };
   },
 
   /**
    * Update subscription status for a user
    */
-  async updateSubscriptionStatus(userId: number, subscriptionStatus: string, subscriptionId?: string): Promise<any> {
+  async updateSubscriptionStatus(userId: number, planName: string, subscriptionId?: string): Promise<any> {
+    // Find the plan by name
+    const plan = await strapi.query('api::plan.plan').findOne({
+      where: { name: planName, isActive: true }
+    });
+
+    if (!plan) {
+      throw new ApplicationError(`Plan '${planName}' not found or inactive`);
+    }
+
     const updateData: any = {
-      subscriptionStatus
+      plan: plan.id
     };
 
     if (subscriptionId) {
@@ -150,26 +168,32 @@ export default factories.createCoreService('api::interview-usage.interview-usage
       });
     }
 
-    const limits = this.getUsageLimits(subscriptionStatus);
-
     return {
-      subscriptionStatus,
+      subscriptionStatus: plan.name,
       subscriptionId,
-      isPaid: subscriptionStatus === 'paid',
-      newLimits: limits
+      isPaid: plan.name !== 'free',
+      plan: {
+        name: plan.name,
+        displayName: plan.displayName,
+        interviewsPerMonth: plan.interviewsPerMonth,
+        features: plan.features
+      }
     };
   },
 
   /**
-   * Get usage limits based on subscription tier
+   * Get the default plan (free plan)
    */
-  getUsageLimits(subscriptionStatus: string) {
-    const limits = {
-      free: { monthlyLimit: 3 },
-      paid: { monthlyLimit: 20 }
-    };
+  async getDefaultPlan(): Promise<any> {
+    const freePlan = await strapi.query('api::plan.plan').findOne({
+      where: { name: 'free', isActive: true }
+    });
 
-    return limits[subscriptionStatus] || limits.free;
+    if (!freePlan) {
+      throw new ApplicationError("Default free plan not found");
+    }
+
+    return freePlan;
   },
 
   /**
@@ -200,17 +224,17 @@ export default factories.createCoreService('api::interview-usage.interview-usage
    * Get interview usage history for a user (last 6 months)
    */
   async getUsageHistory(userId: number): Promise<any[]> {
-    // Get user subscription status to determine the limit
+    // Get user with plan information
     const user = await strapi.query("plugin::users-permissions.user").findOne({
       where: { id: userId },
-      select: ['subscriptionStatus']
+      populate: ['plan']
     });
 
     if (!user) {
       throw new ApplicationError("User not found");
     }
 
-    const limits = this.getUsageLimits(user.subscriptionStatus);
+    const plan = user.plan || await this.getDefaultPlan();
     
     // Query the interview-usage records for this user, last 6 months
     const usageRecords = await strapi.query('api::interview-usage.interview-usage').findMany({
@@ -224,7 +248,7 @@ export default factories.createCoreService('api::interview-usage.interview-usage
     return usageRecords.map(usage => ({
       month: usage.month,
       count: usage.count,
-      limit: limits.monthlyLimit,
+      limit: plan.interviewsPerMonth,
       sessions: usage.sessions?.length || 0,
     }));
   },

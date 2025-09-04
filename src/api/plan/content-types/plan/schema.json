@@ -1,0 +1,41 @@
+{
+  "kind": "collectionType",
+  "collectionName": "plans",
+  "info": {
+    "singularName": "plan",
+    "pluralName": "plans",
+    "displayName": "Plan",
+    "description": "Subscription plans with their limits and features"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "displayName": {
+      "type": "string",
+      "required": true
+    },
+    "interviewsPerMonth": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "features": {
+      "type": "json",
+      "default": []
+    }
+  }
+}

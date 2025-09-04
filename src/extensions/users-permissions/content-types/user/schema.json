@@ -113,13 +113,10 @@
       "target": "api::job-email-queue.job-email-queue",
       "mappedBy": "user"
     },
-    "subscriptionStatus": {
-      "type": "enumeration",
-      "enum": [
-        "free",
-        "paid"
-      ],
-      "default": "free"
+    "plan": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::plan.plan"
     },
     "subscriptionId": {
       "type": "string",

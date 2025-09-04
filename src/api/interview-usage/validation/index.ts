@@ -1,10 +1,10 @@
 import * as yup from 'yup';
 
 export const SubscriptionUpdateSchema = yup.object().shape({
-  subscriptionStatus: yup
+  planName: yup
     .string()
-    .oneOf(['free', 'paid'], 'Subscription status must be either "free" or "paid"')
-    .required('Subscription status is required'),
+    .oneOf(['free', 'paid'], 'Plan name must be either "free" or "paid"')
+    .required('Plan name is required'),
   subscriptionId: yup
     .string()
     .nullable()
