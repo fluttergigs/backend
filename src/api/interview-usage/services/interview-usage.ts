@@ -11,39 +11,43 @@ export default factories.createCoreService('api::interview-usage.interview-usage
   async getCurrentUsage(userId: number): Promise<any> {
     const user = await strapi.query("plugin::users-permissions.user").findOne({
       where: { id: userId },
-      select: ['subscriptionStatus', 'interviewUsageCount', 'lastUsageReset']
+      select: ['subscriptionStatus']
     });
 
     if (!user) {
       throw new ApplicationError("User not found");
     }
 
-    // Check if we need to reset usage (monthly reset)
-    const now = new Date();
-    const lastReset = user.lastUsageReset ? new Date(user.lastUsageReset) : new Date();
-    const shouldReset = this.shouldResetUsage(lastReset, now);
+    // Get current month usage from interview-usage records
+    const currentMonth = this.getCurrentMonthString();
+    let currentUsageRecord = await strapi.query('api::interview-usage.interview-usage').findOne({
+      where: {
+        userId: userId,
+        month: currentMonth
+      }
+    });
 
-    let currentUsage = user.interviewUsageCount || 0;
-    
-    if (shouldReset) {
-      currentUsage = 0;
-      await strapi.query("plugin::users-permissions.user").update({
-        where: { id: userId },
+    // If no record exists for current month, create it
+    if (!currentUsageRecord) {
+      currentUsageRecord = await strapi.query('api::interview-usage.interview-usage').create({
         data: {
-          interviewUsageCount: 0,
-          lastUsageReset: now
+          userId: userId,
+          month: currentMonth,
+          count: 0,
+          sessions: []
         }
       });
     }
 
     const limits = this.getUsageLimits(user.subscriptionStatus);
+    const currentUsage = currentUsageRecord.count || 0;
 
     return {
       currentUsage,
       monthlyLimit: limits.monthlyLimit,
       subscriptionTier: user.subscriptionStatus || 'free',
       canUseInterview: currentUsage < limits.monthlyLimit,
-      resetDate: this.getNextResetDate(shouldReset ? now : lastReset)
+      resetDate: this.getNextResetDate()
     };
   },
 
@@ -57,12 +61,17 @@ export default factories.createCoreService('api::interview-usage.interview-usage
       throw new ApplicationError("Monthly limit exceeded");
     }
 
+    const currentMonth = this.getCurrentMonthString();
     const newUsageCount = currentUsage.currentUsage + 1;
 
-    await strapi.query("plugin::users-permissions.user").update({
-      where: { id: userId },
+    // Update the current month's usage record
+    await strapi.query('api::interview-usage.interview-usage').update({
+      where: {
+        userId: userId,
+        month: currentMonth
+      },
       data: {
-        interviewUsageCount: newUsageCount
+        count: newUsageCount
       }
     });
 
@@ -110,15 +119,38 @@ export default factories.createCoreService('api::interview-usage.interview-usage
       data: updateData
     });
 
-    // Reset usage limits when subscription changes
-    const limits = this.getUsageLimits(subscriptionStatus);
-    await strapi.query("plugin::users-permissions.user").update({
-      where: { id: userId },
-      data: {
-        interviewUsageCount: 0,
-        lastUsageReset: new Date()
+    // Reset usage when subscription changes by creating/resetting current month record
+    const currentMonth = this.getCurrentMonthString();
+    const existingRecord = await strapi.query('api::interview-usage.interview-usage').findOne({
+      where: {
+        userId: userId,
+        month: currentMonth
       }
     });
+
+    if (existingRecord) {
+      await strapi.query('api::interview-usage.interview-usage').update({
+        where: {
+          userId: userId,
+          month: currentMonth
+        },
+        data: {
+          count: 0,
+          sessions: []
+        }
+      });
+    } else {
+      await strapi.query('api::interview-usage.interview-usage').create({
+        data: {
+          userId: userId,
+          month: currentMonth,
+          count: 0,
+          sessions: []
+        }
+      });
+    }
+
+    const limits = this.getUsageLimits(subscriptionStatus);
 
     return {
       subscriptionStatus,
@@ -143,14 +175,11 @@ export default factories.createCoreService('api::interview-usage.interview-usage
   /**
    * Check if usage should be reset (monthly)
    */
-  shouldResetUsage(lastReset: Date, now: Date): boolean {
-    const lastResetMonth = lastReset.getMonth();
-    const lastResetYear = lastReset.getFullYear();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-
-    return (currentYear > lastResetYear) || 
-           (currentYear === lastResetYear && currentMonth > lastResetMonth);
+  getCurrentMonthString(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
   },
 
   /**
@@ -203,10 +232,9 @@ export default factories.createCoreService('api::interview-usage.interview-usage
   /**
    * Get next reset date (next month)
    */
-  getNextResetDate(lastReset: Date): Date {
-    const nextReset = new Date(lastReset);
-    nextReset.setMonth(nextReset.getMonth() + 1);
-    nextReset.setDate(1);
+  getNextResetDate(): Date {
+    const now = new Date();
+    const nextReset = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     nextReset.setHours(0, 0, 0, 0);
     return nextReset;
   }

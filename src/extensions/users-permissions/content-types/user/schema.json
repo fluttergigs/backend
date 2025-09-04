@@ -124,14 +124,6 @@
     "subscriptionId": {
       "type": "string",
       "private": true
-    },
-    "interviewUsageCount": {
-      "type": "integer",
-      "default": 0
-    },
-    "lastUsageReset": {
-      "type": "datetime",
-      "default": "now"
     }
   }
 }
