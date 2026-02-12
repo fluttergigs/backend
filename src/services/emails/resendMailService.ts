@@ -1,10 +1,10 @@
-import { Broadcast, Contact, Mail, MailService, SendBroadcastOptions } from "./mailService";
+import {Broadcast, Contact, Mail, MailService, SendBroadcastOptions} from "./mailService";
 
 /**
  * ResendMailService is a concrete implementation of the MailService interface.
  * It uses the Resend API to send emails and save contacts.
  */
-import { Resend, SendBroadcastResponse } from 'resend';
+import {Resend, SendBroadcastResponse} from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY || '');
 
@@ -19,6 +19,7 @@ export class ResendMailService implements MailService {
         audienceId: data.audienceId,
         html: data.html,
         subject: data.subject,
+        replyTo: data.from,
         name: data.name || data.subject,
       });
     } catch (e) {
@@ -38,7 +39,7 @@ export class ResendMailService implements MailService {
   }
 
   async dispatchBroadcast<T extends Broadcast, U extends SendBroadcastOptions<string, string>>(broadcast: T, sendOptions: U) {
-    const { data } = await this.createBroadcast(broadcast)
+    const {data} = await this.createBroadcast(broadcast)
 
     sendOptions.id = data.id;
 
