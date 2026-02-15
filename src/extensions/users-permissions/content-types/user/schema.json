@@ -112,6 +112,15 @@
       "relation": "oneToMany",
       "target": "api::job-email-queue.job-email-queue",
       "mappedBy": "user"
+    },
+    "plan": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::plan.plan"
+    },
+    "subscriptionId": {
+      "type": "string",
+      "private": true
     }
   }
 }

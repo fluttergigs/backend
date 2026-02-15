@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "interview_usages",
+  "info": {
+    "singularName": "interview-usage",
+    "pluralName": "interview-usages",
+    "displayName": "Interview Usage",
+    "description": "Track interview usage per user per month"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "userId": {
+      "type": "integer",
+      "required": true
+    },
+    "month": {
+      "type": "string",
+      "required": true
+    },
+    "count": {
+      "type": "integer",
+      "default": 0,
+      "required": true
+    },
+    "sessions": {
+      "type": "json",
+      "default": []
+    }
+  }
+}
